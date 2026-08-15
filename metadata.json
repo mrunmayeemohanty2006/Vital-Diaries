@@ -1,0 +1,6 @@
+{
+  "name": "Vital Diaries",
+  "description": "Local-first, zero-knowledge privacy-preserving personal health diaries and medical record manager.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
