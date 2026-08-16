@@ -37,10 +37,10 @@ export const UnlockVaultModal: React.FC<UnlockVaultModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-md flex items-center justify-center p-4">
-      <div className="bg-white max-w-md w-full rounded-[2.5rem] border border-stone-200 shadow-2xl p-8 overflow-hidden">
-        <div className="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center mb-6">
-          <Lock className="w-6 h-6 text-emerald-700" />
+    <div className="fixed inset-0 z-50 bg-stone-900/60 dark:bg-black/70 backdrop-blur-md flex items-center justify-center p-3.5 sm:p-4 overflow-y-auto">
+      <div className="bg-white dark:bg-stone-900 max-w-md w-full rounded-2xl sm:rounded-[2.5rem] border border-stone-200 dark:border-stone-800 shadow-2xl p-5 sm:p-8 max-h-[92vh] overflow-y-auto my-auto text-stone-900 dark:text-stone-100">
+        <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-950/60 rounded-2xl flex items-center justify-center mb-6">
+          <Lock className="w-6 h-6 text-emerald-700 dark:text-emerald-400" />
         </div>
 
         <h2 className="text-2xl font-bold text-stone-900 mb-1">

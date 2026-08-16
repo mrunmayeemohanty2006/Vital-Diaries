@@ -215,23 +215,23 @@ export const HealthReportCard: React.FC<HealthReportCardProps> = ({
   };
 
   return (
-    <tr className="hover:bg-stone-50/80 transition-colors">
-      <td className="px-6 py-4 font-medium text-stone-900 text-sm whitespace-nowrap">
+    <tr className="hover:bg-stone-50/80 dark:hover:bg-stone-800/50 transition-colors">
+      <td className="px-4 sm:px-6 py-4 font-medium text-stone-900 dark:text-stone-100 text-xs sm:text-sm whitespace-nowrap">
         <div className="flex items-center gap-2">
           <Calendar className="w-3.5 h-3.5 text-stone-400" />
           <span>{formatDate(report.date)}</span>
         </div>
       </td>
 
-      <td className="px-6 py-4">
+      <td className="px-4 sm:px-6 py-4 min-w-[160px]">
         <div className="flex flex-col gap-1">
-          <span className="font-bold text-stone-800 text-sm">{report.title}</span>
-          <div className="flex items-center gap-2">
-            <span className={`px-2 py-0.5 rounded-md text-[11px] font-bold border ${getBadgeStyle(report.type)}`}>
+          <span className="font-bold text-stone-800 dark:text-stone-100 text-xs sm:text-sm">{report.title}</span>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className={`px-2 py-0.5 rounded-md text-[10px] sm:text-[11px] font-bold border ${getBadgeStyle(report.type)}`}>
               {getTypeLabel(report.type)}
             </span>
             {report.doctorName && (
-              <span className="text-xs text-stone-500 flex items-center gap-1">
+              <span className="text-[11px] sm:text-xs text-stone-500 dark:text-stone-400 flex items-center gap-1">
                 <UserCheck className="w-3 h-3 text-stone-400" />
                 {report.doctorName}
               </span>
@@ -240,35 +240,37 @@ export const HealthReportCard: React.FC<HealthReportCardProps> = ({
         </div>
       </td>
 
-      <td className="px-6 py-4">
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-semibold border border-emerald-200">
-          <Lock className="w-3 h-3 text-emerald-600" />
+      <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 rounded-full text-[11px] sm:text-xs font-semibold border border-emerald-200 dark:border-emerald-800/60">
+          <Lock className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
           <span>AES-GCM Encrypted</span>
         </span>
       </td>
 
-      <td className="px-6 py-4 text-right">
-        <div className="flex items-center justify-end gap-2">
+      <td className="px-4 sm:px-6 py-4 text-right whitespace-nowrap">
+        <div className="flex items-center justify-end gap-1.5 sm:gap-2">
           <button
             onClick={() => onViewDetails(report)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-xl text-xs font-bold transition-colors border border-stone-200"
+            className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 rounded-xl text-xs font-bold transition-colors border border-stone-200 dark:border-stone-700"
           >
-            <Eye className="w-3.5 h-3.5 text-emerald-600" />
-            <span>{isUnlocked ? 'Decrypt & View' : 'Unlock to View'}</span>
+            <Eye className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span className="hidden sm:inline">{isUnlocked ? 'Decrypt & View' : 'Unlock to View'}</span>
+            <span className="sm:hidden">View</span>
           </button>
 
           <button
             onClick={handleExportPDF}
             disabled={isExporting}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-xl text-xs font-bold transition-colors border border-emerald-200 disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 rounded-xl text-xs font-bold transition-colors border border-emerald-200 dark:border-emerald-800/60 disabled:opacity-50"
             title="Export decrypted plain-text summary to PDF"
           >
             {isExporting ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-600" />
+              <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-600 dark:text-emerald-400" />
             ) : (
-              <FileDown className="w-3.5 h-3.5 text-emerald-600" />
+              <FileDown className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
             )}
-            <span>{isExporting ? 'Exporting...' : 'Export PDF'}</span>
+            <span className="hidden sm:inline">{isExporting ? 'Exporting...' : 'Export PDF'}</span>
+            <span className="sm:hidden">PDF</span>
           </button>
 
           {onDeleteReport && (
@@ -280,11 +282,11 @@ export const HealthReportCard: React.FC<HealthReportCardProps> = ({
                   title="Confirm deletion"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
-                  <span>Confirm Delete?</span>
+                  <span>Confirm?</span>
                 </button>
                 <button
                   onClick={() => setIsConfirmingDelete(false)}
-                  className="p-1.5 bg-stone-100 hover:bg-stone-200 text-stone-600 rounded-xl transition-colors border border-stone-200"
+                  className="p-1.5 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-600 dark:text-stone-300 rounded-xl transition-colors border border-stone-200 dark:border-stone-700"
                   title="Cancel"
                 >
                   <X className="w-3.5 h-3.5" />
@@ -293,11 +295,11 @@ export const HealthReportCard: React.FC<HealthReportCardProps> = ({
             ) : (
               <button
                 onClick={handleDeleteClick}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 hover:text-rose-800 rounded-xl text-xs font-bold transition-colors border border-rose-200"
+                className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-rose-50 dark:bg-rose-950/60 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300 hover:text-rose-800 rounded-xl text-xs font-bold transition-colors border border-rose-200 dark:border-rose-800/60"
                 title="Delete health report"
               >
-                <Trash2 className="w-3.5 h-3.5 text-rose-600" />
-                <span>Delete</span>
+                <Trash2 className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
+                <span className="hidden sm:inline">Delete</span>
               </button>
             )
           )}

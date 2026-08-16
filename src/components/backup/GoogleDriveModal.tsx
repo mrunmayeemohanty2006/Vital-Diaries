@@ -78,21 +78,21 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-md flex items-center justify-center p-4">
-      <div className="bg-white max-w-xl w-full rounded-[2.5rem] border border-stone-200 shadow-2xl p-6 sm:p-8">
-        <div className="flex items-center justify-between pb-4 mb-6 border-b border-stone-100">
+    <div className="fixed inset-0 z-50 bg-stone-900/60 dark:bg-black/70 backdrop-blur-md flex items-center justify-center p-3.5 sm:p-4 overflow-y-auto">
+      <div className="bg-white dark:bg-stone-900 max-w-xl w-full rounded-2xl sm:rounded-[2.5rem] border border-stone-200 dark:border-stone-800 shadow-2xl p-4 sm:p-6 sm:p-8 my-auto max-h-[92vh] overflow-y-auto text-stone-900 dark:text-stone-100">
+        <div className="flex items-center justify-between pb-4 mb-6 border-b border-stone-100 dark:border-stone-800">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-100 rounded-2xl flex items-center justify-center">
-              <Cloud className="w-5 h-5 text-blue-700" />
+            <div className="w-10 h-10 bg-blue-100 dark:bg-blue-950/60 rounded-2xl flex items-center justify-center">
+              <Cloud className="w-5 h-5 text-blue-700 dark:text-blue-400" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-stone-900">Google Drive Encrypted Sync</h2>
-              <p className="text-xs text-stone-500">Zero-Knowledge Cloud Backup Storage</p>
+              <h2 className="text-lg sm:text-xl font-bold text-stone-900 dark:text-stone-100">Google Drive Encrypted Sync</h2>
+              <p className="text-xs text-stone-500 dark:text-stone-400">Zero-Knowledge Cloud Backup Storage</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-xl transition-colors"
+            className="p-2 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>

@@ -7,6 +7,8 @@ import { decryptData } from './lib/crypto';
 
 // Layout & Navigation
 import { Header, type AppTheme } from './components/layout/Header';
+import { MobileHeader } from './components/layout/MobileHeader';
+import { MobileNavigationDrawer } from './components/layout/MobileNavigationDrawer';
 import { Sidebar, type ActiveTab } from './components/layout/Sidebar';
 import { Footer } from './components/layout/Footer';
 import { SplashScreen } from './components/common/SplashScreen';
@@ -64,6 +66,7 @@ export default function App() {
 
   // UI State
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState<boolean>(false);
   const [appTheme, setAppTheme] = useState<AppTheme>(() => (localStorage.getItem('app_theme') as AppTheme) || 'light');
   const [reports, setReports] = useState<HealthReport[]>([]);
 
@@ -341,6 +344,19 @@ export default function App() {
         <SplashScreen onFinish={() => setShowSplashScreen(false)} durationMs={3200} />
       )}
 
+      <MobileHeader
+        activeTab={activeTab}
+        isUnlocked={isUnlocked}
+        onOpenDrawer={() => setIsMobileDrawerOpen(true)}
+        onLockVault={handleLockVault}
+        onUnlockVault={() => setShowUnlockModal(true)}
+        onOpenRecoveryKey={() => setActiveTab('privacy')}
+        userId={userId}
+        userName={userName}
+        currentTheme={appTheme}
+        onThemeChange={setAppTheme}
+      />
+
       <Header
         isUnlocked={isUnlocked}
         isPersistent={storageStatus.isPersistent}
@@ -353,6 +369,14 @@ export default function App() {
         onThemeChange={setAppTheme}
       />
 
+      <MobileNavigationDrawer
+        isOpen={isMobileDrawerOpen}
+        onClose={() => setIsMobileDrawerOpen(false)}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        isUnlocked={isUnlocked}
+      />
+
       <div className="flex-1 flex overflow-hidden">
         <Sidebar
           activeTab={activeTab}
@@ -360,38 +384,18 @@ export default function App() {
           isUnlocked={isUnlocked}
         />
 
-        <main className="flex-1 p-6 lg:p-8 overflow-y-auto space-y-6">
-          {/* Mobile Health Management Navigation Dropdown */}
-          <div className="md:hidden bg-white dark:bg-stone-900 p-3.5 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-2xs">
-            <label className="block text-[10px] font-extrabold text-stone-700 dark:text-stone-300 uppercase tracking-wider mb-1.5">
-              Health Management Navigation
-            </label>
-            <select
-              value={activeTab}
-              onChange={(e) => setActiveTab(e.target.value as ActiveTab)}
-              className="w-full px-4 py-2.5 bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-xl text-xs font-bold text-stone-900 dark:text-stone-100 focus:ring-2 focus:ring-emerald-500"
-            >
-              <option value="dashboard" className="bg-white text-stone-900 dark:bg-stone-900 dark:text-stone-100 font-bold">📊 Dashboard</option>
-              <option value="records" className="bg-white text-stone-900 dark:bg-stone-900 dark:text-stone-100 font-bold">📄 Health Records</option>
-              <option value="ai-advisor" className="bg-white text-stone-900 dark:bg-stone-900 dark:text-stone-100 font-bold">✨ AI Diet & Lab Insights</option>
-              <option value="vitals" className="bg-white text-stone-900 dark:bg-stone-900 dark:text-stone-100 font-bold">⚡ Vitals & Metrics</option>
-              <option value="medications" className="bg-white text-stone-900 dark:bg-stone-900 dark:text-stone-100 font-bold">💊 Medications</option>
-              <option value="profile" className="bg-white text-stone-900 dark:bg-stone-900 dark:text-stone-100 font-bold">👤 My Health Profile</option>
-              <option value="settings" className="bg-white text-stone-900 dark:bg-stone-900 dark:text-stone-100 font-bold">⚙️ Settings & Data</option>
-            </select>
-          </div>
-
+        <main className="flex-1 p-3.5 sm:p-6 lg:p-8 overflow-y-auto space-y-6">
           <BackupReminderBanner onOpenBackup={() => setActiveTab('backup')} />
 
           {/* DASHBOARD TAB */}
           {activeTab === 'dashboard' && (
             <div className="space-y-6">
               {/* Health Dashboard Hero */}
-              <div className="bg-white p-6 lg:p-8 rounded-[2rem] border border-stone-200 shadow-2xs">
+              <div className="bg-white dark:bg-stone-900 p-5 sm:p-6 lg:p-8 rounded-2xl sm:rounded-[2rem] border border-stone-200 dark:border-stone-800 shadow-2xs">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                   <div>
-                    <h1 className="text-2xl font-bold text-stone-900">Health Vault Dashboard</h1>
-                    <p className="text-xs text-stone-500 mt-1">
+                    <h1 className="text-xl sm:text-2xl font-bold text-stone-900 dark:text-stone-100">Health Vault Dashboard</h1>
+                    <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
                       Zero-Knowledge Local Storage • AES-256-GCM Encrypted
                     </p>
                   </div>
@@ -410,37 +414,37 @@ export default function App() {
                 </div>
 
                 {/* Top Metrics Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="p-4 bg-stone-50 rounded-2xl border border-stone-100">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4">
+                  <div className="p-4 bg-stone-50 dark:bg-stone-800/60 rounded-2xl border border-stone-100 dark:border-stone-800">
                     <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">
                       Local Storage Mode
                     </p>
-                    <h3 className="text-xl font-bold text-stone-900">
+                    <h3 className="text-xl font-bold text-stone-900 dark:text-stone-100">
                       {storageStatus.isPersistent ? 'Protected' : 'Standard'}
                     </h3>
-                    <div className="flex items-center gap-1.5 mt-2 text-emerald-700 font-semibold text-xs">
+                    <div className="flex items-center gap-1.5 mt-2 text-emerald-700 dark:text-emerald-400 font-semibold text-xs">
                       <ShieldCheck className="w-3.5 h-3.5" />
                       IndexedDB Local
                     </div>
                   </div>
 
-                  <div className="p-4 bg-stone-50 rounded-2xl border border-stone-100">
+                  <div className="p-4 bg-stone-50 dark:bg-stone-800/60 rounded-2xl border border-stone-100 dark:border-stone-800">
                     <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">
                       Encrypted Reports
                     </p>
-                    <h3 className="text-xl font-bold text-stone-900">{reports.length}</h3>
-                    <div className="flex items-center gap-1.5 mt-2 text-emerald-700 font-semibold text-xs">
+                    <h3 className="text-xl font-bold text-stone-900 dark:text-stone-100">{reports.length}</h3>
+                    <div className="flex items-center gap-1.5 mt-2 text-emerald-700 dark:text-emerald-400 font-semibold text-xs">
                       <Lock className="w-3.5 h-3.5" />
                       Zero Plaintext
                     </div>
                   </div>
 
-                  <div className="p-4 bg-stone-50 rounded-2xl border border-stone-100">
+                  <div className="p-4 bg-stone-50 dark:bg-stone-800/60 rounded-2xl border border-stone-100 dark:border-stone-800">
                     <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">
                       Backup Protection
                     </p>
-                    <h3 className="text-xl font-bold text-stone-900">Google Drive</h3>
-                    <div className="flex items-center gap-1.5 mt-2 text-stone-500 font-semibold text-xs">
+                    <h3 className="text-xl font-bold text-stone-900 dark:text-stone-100">Google Drive</h3>
+                    <div className="flex items-center gap-1.5 mt-2 text-stone-500 dark:text-stone-400 font-semibold text-xs">
                       Client-Side AES
                     </div>
                   </div>
@@ -473,28 +477,28 @@ export default function App() {
               />
 
               {/* Recent Medical Events Table */}
-              <div className="bg-white rounded-[2rem] border border-stone-200 shadow-2xs overflow-hidden">
-                <div className="px-6 py-4 border-b border-stone-100 flex items-center justify-between">
-                  <h3 className="font-bold text-stone-900 text-base">Recent Encrypted Medical Events</h3>
+              <div className="bg-white dark:bg-stone-900 rounded-2xl sm:rounded-[2rem] border border-stone-200 dark:border-stone-800 shadow-2xs overflow-hidden">
+                <div className="px-4 sm:px-6 py-4 border-b border-stone-100 dark:border-stone-800 flex items-center justify-between">
+                  <h3 className="font-bold text-stone-900 dark:text-stone-100 text-sm sm:text-base">Recent Encrypted Medical Events</h3>
                   <button
                     onClick={() => setActiveTab('records')}
-                    className="text-xs font-semibold text-emerald-700 hover:text-emerald-800"
+                    className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300"
                   >
-                    View All Records ({reports.length})
+                    View All ({reports.length})
                   </button>
                 </div>
 
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-sm">
-                    <thead className="bg-stone-50 text-stone-400 font-bold uppercase text-[10px] tracking-widest border-b border-stone-100">
+                    <thead className="bg-stone-50 dark:bg-stone-800/80 text-stone-400 font-bold uppercase text-[10px] tracking-widest border-b border-stone-100 dark:border-stone-800">
                       <tr>
-                        <th className="px-6 py-3">Date</th>
-                        <th className="px-6 py-3">Record Title</th>
-                        <th className="px-6 py-3">Encryption Status</th>
-                        <th className="px-6 py-3 text-right">Action</th>
+                        <th className="px-4 sm:px-6 py-3">Date</th>
+                        <th className="px-4 sm:px-6 py-3">Record Title</th>
+                        <th className="px-4 sm:px-6 py-3">Encryption Status</th>
+                        <th className="px-4 sm:px-6 py-3 text-right">Action</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-stone-100">
+                    <tbody className="divide-y divide-stone-100 dark:divide-stone-800">
                       {reports.slice(0, 5).map((report) => (
                         <HealthReportCard
                           key={report.id}
@@ -517,8 +521,8 @@ export default function App() {
             <div className="space-y-6">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                  <h2 className="text-2xl font-bold text-stone-900">Health Records & Reports</h2>
-                  <p className="text-sm text-stone-500">
+                  <h2 className="text-xl sm:text-2xl font-bold text-stone-900 dark:text-stone-100">Health Records & Reports</h2>
+                  <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400">
                     Encrypted laboratory results, radiology scans & consultations
                   </p>
                 </div>
@@ -526,7 +530,7 @@ export default function App() {
                 {isUnlocked && (
                   <button
                     onClick={() => setShowAddReportModal(true)}
-                    className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-2xs transition-colors"
+                    className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-2xs transition-colors w-full sm:w-auto justify-center"
                   >
                     <Plus className="w-4 h-4" />
                     <span>Add Encrypted Report</span>
@@ -541,7 +545,7 @@ export default function App() {
                   placeholder="Search titles or physician names..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex-1 px-4 py-2.5 bg-white border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-2xs"
+                  className="flex-1 px-4 py-2.5 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-xs text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-2xs"
                 />
 
                 <select
@@ -558,37 +562,39 @@ export default function App() {
               </div>
 
               {/* Reports Table */}
-              <div className="bg-white rounded-[2rem] border border-stone-200 shadow-2xs overflow-hidden">
-                <table className="w-full text-left text-sm">
-                  <thead className="bg-stone-50 text-stone-400 font-bold uppercase text-[10px] tracking-widest border-b border-stone-100">
-                    <tr>
-                      <th className="px-6 py-3">Date</th>
-                      <th className="px-6 py-3">Report Details</th>
-                      <th className="px-6 py-3">Status</th>
-                      <th className="px-6 py-3 text-right">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-stone-100">
-                    {filteredReports.length === 0 ? (
+              <div className="bg-white dark:bg-stone-900 rounded-2xl sm:rounded-[2rem] border border-stone-200 dark:border-stone-800 shadow-2xs overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-sm">
+                    <thead className="bg-stone-50 dark:bg-stone-800/80 text-stone-400 font-bold uppercase text-[10px] tracking-widest border-b border-stone-100 dark:border-stone-800">
                       <tr>
-                        <td colSpan={4} className="px-6 py-12 text-center text-stone-400 text-xs">
-                          No health reports matching criteria.
-                        </td>
+                        <th className="px-4 sm:px-6 py-3">Date</th>
+                        <th className="px-4 sm:px-6 py-3">Report Details</th>
+                        <th className="px-4 sm:px-6 py-3">Status</th>
+                        <th className="px-4 sm:px-6 py-3 text-right">Action</th>
                       </tr>
-                    ) : (
-                      filteredReports.map((report) => (
-                        <HealthReportCard
-                          key={report.id}
-                          report={report}
-                          encryptionKey={encryptionKey}
-                          onViewDetails={(r) => setSelectedReport(r)}
-                          onDeleteReport={handleDeleteReport}
-                          isUnlocked={isUnlocked}
-                        />
-                      ))
-                    )}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-stone-100 dark:divide-stone-800">
+                      {filteredReports.length === 0 ? (
+                        <tr>
+                          <td colSpan={4} className="px-6 py-12 text-center text-stone-400 text-xs">
+                            No health reports matching criteria.
+                          </td>
+                        </tr>
+                      ) : (
+                        filteredReports.map((report) => (
+                          <HealthReportCard
+                            key={report.id}
+                            report={report}
+                            encryptionKey={encryptionKey}
+                            onViewDetails={(r) => setSelectedReport(r)}
+                            onDeleteReport={handleDeleteReport}
+                            isUnlocked={isUnlocked}
+                          />
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}

@@ -9,25 +9,37 @@ interface SidebarProps {
   isUnlocked: boolean;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isUnlocked }) => {
-  const navItems = [
-    { id: 'dashboard' as ActiveTab, label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'records' as ActiveTab, label: 'Health Records', icon: FileText },
-    { id: 'ai-advisor' as ActiveTab, label: 'AI Diet & Lab Insights', icon: Sparkles },
-    { id: 'vitals' as ActiveTab, label: 'Vitals & Metrics', icon: Activity },
-    { id: 'medications' as ActiveTab, label: 'Medications', icon: Pill },
-    { id: 'profile' as ActiveTab, label: 'My Health Profile', icon: User },
-    { id: 'settings' as ActiveTab, label: 'Settings & Data', icon: SettingsIcon },
-  ];
+export const NAV_ITEMS = [
+  { id: 'dashboard' as ActiveTab, label: 'Dashboard', icon: LayoutDashboard },
+  { id: 'records' as ActiveTab, label: 'Health Records', icon: FileText },
+  { id: 'ai-advisor' as ActiveTab, label: 'AI Diet & Lab Insights', icon: Sparkles },
+  { id: 'vitals' as ActiveTab, label: 'Vitals & Metrics', icon: Activity },
+  { id: 'medications' as ActiveTab, label: 'Medications', icon: Pill },
+  { id: 'profile' as ActiveTab, label: 'My Health Profile', icon: User },
+  { id: 'settings' as ActiveTab, label: 'Settings & Data', icon: SettingsIcon },
+];
 
+export const TAB_LABELS: Record<ActiveTab, string> = {
+  'dashboard': 'Dashboard',
+  'records': 'Health Records',
+  'ai-advisor': 'AI Diet & Lab Insights',
+  'vitals': 'Vitals & Metrics',
+  'medications': 'Medications',
+  'profile': 'My Health Profile',
+  'settings': 'Settings & Data',
+  'privacy': 'Settings & Data',
+  'backup': 'Settings & Data',
+};
+
+export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isUnlocked }) => {
   return (
-    <aside className="w-64 border-r border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/40 p-5 flex flex-col justify-between shrink-0 h-[calc(100vh-4rem)] sticky top-16 transition-colors">
+    <aside className="hidden md:flex w-64 border-r border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/40 p-5 flex-col justify-between shrink-0 h-[calc(100vh-4rem)] sticky top-16 transition-colors">
       <div className="flex flex-col gap-1.5">
         <div className="px-3 py-2 text-[11px] font-extrabold text-stone-700 dark:text-stone-400 uppercase tracking-widest">
           Health Management
         </div>
         <nav className="flex flex-col gap-1">
-          {navItems.map((item) => {
+          {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
             return (

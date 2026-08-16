@@ -370,32 +370,32 @@ export const HealthTrajectoryChart: React.FC<HealthTrajectoryChartProps> = ({
     : 'Upload 2 or more lab records to compare health improvement or decrement level';
 
   return (
-    <div className="bg-white p-6 rounded-[2rem] border border-stone-200 shadow-2xs space-y-6">
+    <div className="bg-white dark:bg-stone-900 p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-[2rem] border border-stone-200 dark:border-stone-800 shadow-2xs space-y-6">
       {/* Header section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-stone-100 pb-5">
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 border-b border-stone-100 dark:border-stone-800 pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <span className="p-1.5 bg-emerald-100 text-emerald-700 rounded-lg">
+            <span className="p-1.5 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 rounded-lg">
               <Activity className="w-4 h-4" />
             </span>
-            <h3 className="text-lg font-bold text-stone-900">Health Trajectory & Progression</h3>
+            <h3 className="text-base sm:text-lg font-bold text-stone-900 dark:text-stone-100">Health Trajectory & Progression</h3>
           </div>
-          <p className="text-xs text-stone-500 mt-1">
+          <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
             Calculated strictly from uploaded health record files across dates (Minimum 2 files for comparison)
           </p>
         </div>
 
         {/* Metric Selector Pills */}
-        <div className="flex flex-wrap items-center gap-2 bg-stone-100 p-1.5 rounded-2xl">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 bg-stone-100 dark:bg-stone-800 p-1.5 rounded-2xl w-full sm:w-auto">
           <button
             onClick={() => setSelectedMetric('score')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
               selectedMetric === 'score'
-                ? 'bg-white text-emerald-800 shadow-2xs font-extrabold'
-                : 'text-stone-600 hover:text-stone-900'
+                ? 'bg-white dark:bg-stone-900 text-emerald-800 dark:text-emerald-300 shadow-2xs font-extrabold'
+                : 'text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white'
             }`}
           >
-            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+            <Sparkles className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
             <span>Health Score</span>
           </button>
 
@@ -403,11 +403,11 @@ export const HealthTrajectoryChart: React.FC<HealthTrajectoryChartProps> = ({
             onClick={() => setSelectedMetric('bpSystolic')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
               selectedMetric === 'bpSystolic'
-                ? 'bg-white text-rose-800 shadow-2xs font-extrabold'
-                : 'text-stone-600 hover:text-stone-900'
+                ? 'bg-white dark:bg-stone-900 text-rose-800 dark:text-rose-300 shadow-2xs font-extrabold'
+                : 'text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white'
             }`}
           >
-            <Heart className="w-3.5 h-3.5 text-rose-600" />
+            <Heart className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
             <span>Blood Pressure</span>
           </button>
 
@@ -415,11 +415,11 @@ export const HealthTrajectoryChart: React.FC<HealthTrajectoryChartProps> = ({
             onClick={() => setSelectedMetric('glucose')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
               selectedMetric === 'glucose'
-                ? 'bg-white text-blue-800 shadow-2xs font-extrabold'
-                : 'text-stone-600 hover:text-stone-900'
+                ? 'bg-white dark:bg-stone-900 text-blue-800 dark:text-blue-300 shadow-2xs font-extrabold'
+                : 'text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white'
             }`}
           >
-            <Droplets className="w-3.5 h-3.5 text-blue-600" />
+            <Droplets className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
             <span>Glucose</span>
           </button>
 
@@ -427,36 +427,36 @@ export const HealthTrajectoryChart: React.FC<HealthTrajectoryChartProps> = ({
             onClick={() => setSelectedMetric('hemoglobin')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
               selectedMetric === 'hemoglobin'
-                ? 'bg-white text-purple-800 shadow-2xs font-extrabold'
-                : 'text-stone-600 hover:text-stone-900'
+                ? 'bg-white dark:bg-stone-900 text-purple-800 dark:text-purple-300 shadow-2xs font-extrabold'
+                : 'text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white'
             }`}
           >
-            <Award className="w-3.5 h-3.5 text-purple-600" />
+            <Award className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
             <span>Hemoglobin</span>
           </button>
         </div>
       </div>
 
       {/* Increment / Decrement Status Banner */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-4 bg-stone-50 rounded-2xl border border-stone-100 flex items-center justify-between">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4">
+        <div className="p-4 bg-stone-50 dark:bg-stone-800/60 rounded-2xl border border-stone-100 dark:border-stone-800 flex items-center justify-between">
           <div>
             <p className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-0.5">
               Latest Record Value
             </p>
-            <div className="text-xl font-bold text-stone-900">
+            <div className="text-xl font-bold text-stone-900 dark:text-stone-100">
               {hasData ? (
                 <>
-                  {currentVal} <span className="text-xs font-semibold text-stone-500">{metricUnit}</span>
+                  {currentVal} <span className="text-xs font-semibold text-stone-500 dark:text-stone-400">{metricUnit}</span>
                 </>
               ) : (
                 <span className="text-stone-400 font-normal text-sm">-- No Uploads --</span>
               )}
             </div>
-            <p className="text-[10px] text-stone-500 mt-1">{metricTitle}</p>
+            <p className="text-[10px] text-stone-500 dark:text-stone-400 mt-1">{metricTitle}</p>
           </div>
-          <div className="p-2.5 bg-white rounded-xl border border-stone-200 text-stone-700">
-            <Activity className="w-5 h-5 text-emerald-600" />
+          <div className="p-2.5 bg-white dark:bg-stone-800 rounded-xl border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300">
+            <Activity className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
           </div>
         </div>
 
@@ -464,23 +464,23 @@ export const HealthTrajectoryChart: React.FC<HealthTrajectoryChartProps> = ({
         <div className={`p-4 rounded-2xl border flex items-center justify-between col-span-1 sm:col-span-2 ${
           hasEnoughRecordsForComparison
             ? isPositiveIncrement
-              ? 'bg-emerald-50/80 border-emerald-200'
-              : 'bg-amber-50/80 border-amber-200'
-            : 'bg-stone-50 border-stone-200'
+              ? 'bg-emerald-50/80 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800/60'
+              : 'bg-amber-50/80 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800/60'
+            : 'bg-stone-50 dark:bg-stone-800/60 border-stone-200 dark:border-stone-800'
         }`}>
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-wider mb-0.5 text-stone-600">
+            <p className="text-[10px] font-bold uppercase tracking-wider mb-0.5 text-stone-600 dark:text-stone-400">
               Trajectory Progression Comparison (Minimum 2 Uploads)
             </p>
             <div className={`text-base sm:text-lg font-extrabold flex items-center gap-1.5 ${
               hasEnoughRecordsForComparison
-                ? isPositiveIncrement ? 'text-emerald-800' : 'text-amber-800'
-                : 'text-stone-600'
+                ? isPositiveIncrement ? 'text-emerald-800 dark:text-emerald-300' : 'text-amber-800 dark:text-amber-300'
+                : 'text-stone-600 dark:text-stone-300'
             }`}>
               {hasEnoughRecordsForComparison ? (
                 isPositiveIncrement ? (
                   <>
-                    <TrendingUp className="w-5 h-5 shrink-0 text-emerald-600" />
+                    <TrendingUp className="w-5 h-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
                     <span>{overallDirectionText}</span>
                     <span className="text-xs font-mono font-semibold opacity-80">
                       ({absoluteChange > 0 ? `+${absoluteChange}` : absoluteChange} {metricUnit})
@@ -488,7 +488,7 @@ export const HealthTrajectoryChart: React.FC<HealthTrajectoryChartProps> = ({
                   </>
                 ) : (
                   <>
-                    <TrendingDown className="w-5 h-5 shrink-0 text-amber-600" />
+                    <TrendingDown className="w-5 h-5 shrink-0 text-amber-600 dark:text-amber-400" />
                     <span>{overallDirectionText}</span>
                     <span className="text-xs font-mono font-semibold opacity-80">
                       ({absoluteChange} {metricUnit})
@@ -496,10 +496,10 @@ export const HealthTrajectoryChart: React.FC<HealthTrajectoryChartProps> = ({
                   </>
                 )
               ) : (
-                <span className="text-xs font-bold text-stone-600">{overallDirectionText}</span>
+                <span className="text-xs font-bold text-stone-600 dark:text-stone-300">{overallDirectionText}</span>
               )}
             </div>
-            <p className="text-[11px] font-medium text-stone-500 mt-1">
+            <p className="text-[11px] font-medium text-stone-500 dark:text-stone-400 mt-1">
               {comparisonPeriodText}
             </p>
           </div>
@@ -507,9 +507,9 @@ export const HealthTrajectoryChart: React.FC<HealthTrajectoryChartProps> = ({
           <div className={`p-2.5 rounded-xl border shrink-0 ${
             hasEnoughRecordsForComparison
               ? isPositiveIncrement
-                ? 'bg-emerald-100 border-emerald-300 text-emerald-800'
-                : 'bg-amber-100 border-amber-300 text-amber-800'
-              : 'bg-stone-100 border-stone-200 text-stone-400'
+                ? 'bg-emerald-100 dark:bg-emerald-900/60 border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-300'
+                : 'bg-amber-100 dark:bg-amber-900/60 border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-300'
+              : 'bg-stone-100 dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-400'
           }`}>
             {hasEnoughRecordsForComparison ? (
               isPositiveIncrement ? <CheckCircle2 className="w-5 h-5" /> : <AlertTriangle className="w-5 h-5" />

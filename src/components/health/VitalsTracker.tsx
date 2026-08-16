@@ -745,7 +745,7 @@ export const VitalsTracker: React.FC<VitalsTrackerProps> = ({ encryptionKey, use
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                     <select
                       value={selectedFileId}
                       onChange={(e) => {
@@ -763,7 +763,7 @@ export const VitalsTracker: React.FC<VitalsTrackerProps> = ({ encryptionKey, use
                     <button
                       type="button"
                       onClick={() => handleApplyFileImport(selectedFileId)}
-                      className="px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shrink-0 flex items-center gap-1.5 shadow-2xs"
+                      className="px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shrink-0 flex items-center justify-center gap-1.5 shadow-2xs"
                     >
                       <Sparkles className="w-3.5 h-3.5" />
                       <span>Extract & Auto-Fill</span>

@@ -15,13 +15,13 @@ export const SameDeviceWelcomeModal: React.FC<SameDeviceWelcomeModalProps> = ({
   onOpenRecoveryOrReset,
 }) => {
   return (
-    <div className="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-md flex items-center justify-center p-4">
-      <div className="bg-white max-w-md w-full rounded-[2.5rem] border border-stone-200 shadow-2xl p-8 overflow-hidden text-center">
-        <div className="w-16 h-16 bg-emerald-100 rounded-3xl flex items-center justify-center mx-auto mb-5 shadow-2xs">
+    <div className="fixed inset-0 z-50 bg-stone-900/60 dark:bg-black/70 backdrop-blur-md flex items-center justify-center p-3.5 sm:p-4 overflow-y-auto">
+      <div className="bg-white dark:bg-stone-900 max-w-md w-full rounded-2xl sm:rounded-[2.5rem] border border-stone-200 dark:border-stone-800 shadow-2xl p-5 sm:p-8 overflow-hidden text-center my-auto max-h-[92vh] text-stone-900 dark:text-stone-100">
+        <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-950/60 rounded-3xl flex items-center justify-center mx-auto mb-5 shadow-2xs">
           <span className="text-2xl">👋</span>
         </div>
 
-        <h2 className="text-2xl font-bold text-stone-900 mb-1">
+        <h2 className="text-xl sm:text-2xl font-bold text-stone-900 dark:text-stone-100 mb-1">
           Welcome back
         </h2>
         <p className="text-xs text-stone-500 font-medium mb-6">

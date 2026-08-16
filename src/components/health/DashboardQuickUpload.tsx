@@ -138,20 +138,20 @@ export const DashboardQuickUpload: React.FC<DashboardQuickUploadProps> = ({
   };
 
   return (
-    <div className="bg-white p-6 rounded-[2rem] border border-stone-200 shadow-2xs space-y-4">
-      <div className="flex items-center justify-between">
+    <div className="bg-white dark:bg-stone-900 p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border border-stone-200 dark:border-stone-800 shadow-2xs space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
         <div>
-          <h3 className="text-base font-bold text-stone-900 flex items-center gap-2">
-            <UploadCloud className="w-5 h-5 text-emerald-600" />
+          <h3 className="text-base font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+            <UploadCloud className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             <span>Upload Health Record File</span>
           </h3>
-          <p className="text-xs text-stone-500">
+          <p className="text-xs text-stone-500 dark:text-stone-400">
             Drag & drop or select PDF, PNG, JPG medical reports to encrypt and store locally
           </p>
         </div>
-        <div className="flex items-center gap-1.5 px-3 py-1 bg-stone-100 text-stone-600 rounded-full text-xs font-semibold">
-          <Lock className="w-3.5 h-3.5 text-emerald-600" />
-          <span>Local Client-Side Encryption</span>
+        <div className="flex items-center gap-1.5 px-3 py-1 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 rounded-full text-xs font-semibold self-start sm:self-auto border border-stone-200/60 dark:border-stone-700/60">
+          <Lock className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+          <span>AES-256 Encrypted</span>
         </div>
       </div>
 
@@ -160,10 +160,10 @@ export const DashboardQuickUpload: React.FC<DashboardQuickUploadProps> = ({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
-        className={`p-6 sm:p-8 rounded-2xl border-2 border-dashed transition-all cursor-pointer text-center flex flex-col items-center justify-center gap-3 ${
+        className={`p-5 sm:p-8 rounded-2xl border-2 border-dashed transition-all cursor-pointer text-center flex flex-col items-center justify-center gap-3 ${
           isDragging
-            ? 'border-emerald-500 bg-emerald-50/80 scale-[1.01]'
-            : 'border-stone-200 bg-stone-50/60 hover:bg-emerald-50/30 hover:border-emerald-300'
+            ? 'border-emerald-500 bg-emerald-50/80 dark:bg-emerald-950/40 scale-[1.01]'
+            : 'border-stone-200 dark:border-stone-800 bg-stone-50/60 dark:bg-stone-800/40 hover:bg-emerald-50/30 dark:hover:bg-emerald-950/20 hover:border-emerald-300 dark:hover:border-emerald-700'
         }`}
       >
         <input
@@ -175,18 +175,18 @@ export const DashboardQuickUpload: React.FC<DashboardQuickUploadProps> = ({
         />
 
         {isUploading ? (
-          <div className="flex flex-col items-center gap-2 text-emerald-700 py-2">
-            <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
+          <div className="flex flex-col items-center gap-2 text-emerald-700 dark:text-emerald-300 py-2">
+            <Loader2 className="w-8 h-8 animate-spin text-emerald-600 dark:text-emerald-400" />
             <span className="text-xs font-bold">{uploadStatus}</span>
           </div>
         ) : (
           <>
-            <div className="w-12 h-12 bg-emerald-100/80 rounded-2xl flex items-center justify-center text-emerald-700 shadow-2xs">
+            <div className="w-12 h-12 bg-emerald-100/80 dark:bg-emerald-950/60 rounded-2xl flex items-center justify-center text-emerald-700 dark:text-emerald-400 shadow-2xs">
               <UploadCloud className="w-6 h-6" />
             </div>
 
             <div>
-              <p className="text-sm font-bold text-stone-900">
+              <p className="text-sm font-bold text-stone-900 dark:text-stone-100">
                 Click to browse or drop medical files here
               </p>
               <p className="text-xs text-stone-400 mt-0.5">
