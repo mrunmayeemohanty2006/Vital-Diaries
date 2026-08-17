@@ -14,6 +14,7 @@ import { Footer } from './components/layout/Footer';
 import { SplashScreen } from './components/common/SplashScreen';
 
 // Auth Modals
+import { FirstTimeWelcomeModal } from './components/auth/FirstTimeWelcomeModal';
 import { VaultSetupModal } from './components/auth/VaultSetupModal';
 import { UnlockVaultModal } from './components/auth/UnlockVaultModal';
 import { SameDeviceWelcomeModal } from './components/auth/SameDeviceWelcomeModal';
@@ -54,9 +55,10 @@ export default function App() {
   const [encryptionKey, setEncryptionKey] = useState<CryptoKey | null>(null);
   const [saltBase64, setSaltBase64] = useState<string | null>(null);
   const [userId, setUserId] = useState<string>('');
-  const [userName, setUserName] = useState<string>('Mrunmayee');
-  const [recoveryKeySnippet, setRecoveryKeySnippet] = useState<string>('VITA-7729-QLZP-9901-BAKE');
+  const [userName, setUserName] = useState<string>('');
+  const [recoveryKeySnippet, setRecoveryKeySnippet] = useState<string>('');
   const [fullRecoveryKey, setFullRecoveryKey] = useState<string>('');
+  const [showFirstTimeWelcome, setShowFirstTimeWelcome] = useState<boolean>(false);
 
   // Storage Persistence state
   const [storageStatus, setStorageStatus] = useState<StorageStatus>({
@@ -137,7 +139,14 @@ export default function App() {
       }
       setUserId(currentUserId);
 
-      if (nameRecord) setUserName(nameRecord.value);
+      if (nameRecord && nameRecord.value && nameRecord.value.trim()) {
+        setUserName(nameRecord.value.trim());
+        setShowFirstTimeWelcome(false);
+      } else {
+        setUserName('');
+        setShowFirstTimeWelcome(true);
+      }
+
       if (recKeyRecord) {
         setFullRecoveryKey(recKeyRecord.value);
         setRecoveryKeySnippet(recKeyRecord.value);
@@ -268,6 +277,15 @@ export default function App() {
     setActiveTab('dashboard');
   };
 
+  const handleFirstTimeSetup = async (name: string) => {
+    const trimmedName = name.trim();
+    if (!trimmedName) return;
+
+    await db.settings.put({ key: 'vault_user_name', value: trimmedName });
+    setUserName(trimmedName);
+    setShowFirstTimeWelcome(false);
+  };
+
   const handleUpdateUserName = async (newName: string) => {
     await db.settings.put({ key: 'vault_user_name', value: newName });
     setUserName(newName);
@@ -313,10 +331,11 @@ export default function App() {
     setEncryptionKey(null);
     setIsUnlocked(false);
     setIsInitialized(false);
+    setUserName('');
     setReports([]);
     setShowSameDeviceModal(false);
     setShowUnlockModal(false);
-    setShowNewDeviceModal(true);
+    setShowFirstTimeWelcome(true);
   };
 
   const filteredReports = reports.filter((r) => {
@@ -658,11 +677,15 @@ export default function App() {
         lastBackupDate={new Date().toISOString()}
       />
 
+      {/* First-Time User Welcome Modal */}
+      {showFirstTimeWelcome && !showSplashScreen && (
+        <FirstTimeWelcomeModal onComplete={handleFirstTimeSetup} />
+      )}
+
       {/* MODALS */}
       {showSameDeviceModal && (
         <SameDeviceWelcomeModal
           userName={userName}
-          userEmail="mrunmayee717@gmail.com"
           onContinue={handleSameDeviceContinue}
           onOpenRecoveryOrReset={() => {
             setShowSameDeviceModal(false);
@@ -738,6 +761,7 @@ export default function App() {
           encryptionKey={encryptionKey}
           saltBase64={saltBase64}
           userId={userId}
+          userName={userName}
           onClose={() => setShowDriveModal(false)}
         />
       )}

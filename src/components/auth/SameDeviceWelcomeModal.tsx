@@ -10,7 +10,7 @@ interface SameDeviceWelcomeModalProps {
 
 export const SameDeviceWelcomeModal: React.FC<SameDeviceWelcomeModalProps> = ({
   userName,
-  userEmail = 'mrunmayee717@gmail.com',
+  userEmail,
   onContinue,
   onOpenRecoveryOrReset,
 }) => {
@@ -34,7 +34,11 @@ export const SameDeviceWelcomeModal: React.FC<SameDeviceWelcomeModalProps> = ({
           </div>
           <div className="overflow-hidden">
             <p className="font-bold text-stone-900 text-sm truncate">{userName || 'Vital Diaries User'}</p>
-            <p className="text-xs text-stone-500 truncate">{userEmail}</p>
+            {userEmail ? (
+              <p className="text-xs text-stone-500 truncate">{userEmail}</p>
+            ) : (
+              <p className="text-xs text-emerald-700 font-medium">Local Profile</p>
+            )}
           </div>
         </div>
 

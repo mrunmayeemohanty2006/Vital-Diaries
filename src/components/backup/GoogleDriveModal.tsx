@@ -9,6 +9,7 @@ interface GoogleDriveModalProps {
   encryptionKey: CryptoKey | null;
   saltBase64: string | null;
   userId: string;
+  userName?: string;
   onClose: () => void;
   onSelectBackupToRestore?: (jsonString: string) => void;
 }
@@ -17,6 +18,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
   encryptionKey,
   saltBase64,
   userId,
+  userName,
   onClose,
   onSelectBackupToRestore,
 }) => {
@@ -36,7 +38,9 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
     setStatusMessage('Connecting to Google Drive API...');
     setTimeout(() => {
       setIsConnected(true);
-      setUserAccount({ email: 'mrunmayee717@gmail.com', name: 'Mrunmayee' });
+      const displayName = userName?.trim() || 'Health Vault User';
+      const sanitizedName = displayName.toLowerCase().replace(/[^a-z0-9]/g, '') || 'user';
+      setUserAccount({ email: `${sanitizedName}@gmail.com`, name: displayName });
       setStatusMessage('Connected successfully. Fetching encrypted backups...');
       handleFetchDriveList();
     }, 1200);

@@ -75,7 +75,7 @@ export const PrivacyDashboard: React.FC<PrivacyDashboardProps> = ({
               type="text"
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
-              placeholder="e.g. Mrunmayee"
+              placeholder="e.g. Alex Morgan"
               className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
             />
           </div>

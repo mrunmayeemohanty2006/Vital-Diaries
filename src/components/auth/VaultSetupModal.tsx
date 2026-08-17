@@ -8,7 +8,7 @@ interface VaultSetupModalProps {
 
 export const VaultSetupModal: React.FC<VaultSetupModalProps> = ({ onCompleteSetup }) => {
   const [step, setStep] = useState<'passphrase' | 'recoveryKey'>('passphrase');
-  const [fullName, setFullName] = useState('Mrunmayee');
+  const [fullName, setFullName] = useState('');
   const [passphrase, setPassphrase] = useState('');
   const [confirmPassphrase, setConfirmPassphrase] = useState('');
   const [error, setError] = useState('');
@@ -114,7 +114,7 @@ IMPORTANT PRIVACY & SECURITY WARNING:
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  placeholder="e.g. Mrunmayee"
+                  placeholder="e.g. Alex Morgan"
                   className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white text-sm font-medium"
                   required
                 />
