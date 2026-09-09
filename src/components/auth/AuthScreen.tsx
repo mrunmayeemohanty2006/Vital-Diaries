@@ -114,9 +114,15 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
       if (dek) {
         onAuthSuccess(res.user, dek, res.device, password);
       } else {
-        // Vault initialization might be needed or password mismatch on local vault
-        setError('Vault password mismatch or local vault requires recovery key.');
-        setMode('recovery_key_input');
+        // If local vault doesn't exist yet on this device, initialize it with password
+        try {
+          const recoverySecret = generateMasterRecoveryKey();
+          const initRes = await onInitializeVault(password, recoverySecret);
+          onAuthSuccess(res.user, initRes.dek, res.device, password);
+        } catch {
+          setError('Vault password mismatch or local vault requires recovery key.');
+          setMode('recovery_key_input');
+        }
       }
     } catch (err: any) {
       setError(err.message || 'Invalid email or password.');
@@ -124,6 +130,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
       setLoading(false);
     }
   };
+
 
   // --- 2. HANDLE REGISTER ---
   const handleRegisterSubmit = async (e: React.FormEvent) => {
