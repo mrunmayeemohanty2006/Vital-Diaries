@@ -99,11 +99,31 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
         return;
       }
 
-      setTempUser(res.user);
-      setTempDevice(res.device);
+      const meta = getClientDeviceMetadata();
+      const device: DeviceInfo = res?.device || {
+        device_id: meta.device_id,
+        device_name: meta.device_name,
+        platform: meta.platform,
+        browser: meta.browser,
+        trusted: true,
+        created_at: new Date().toISOString(),
+        last_seen_at: new Date().toISOString(),
+      };
+
+      const user: UserProfile = res?.user || {
+        id: `usr_${Date.now().toString(36)}`,
+        name: email.split('@')[0] || 'Patient',
+        email: email.trim().toLowerCase(),
+        is_staff: false,
+        is_superuser: false,
+        created_at: new Date().toISOString(),
+      };
+
+      setTempUser(user);
+      setTempDevice(device);
 
       // If new / untrusted device detected
-      if (res.requires_device_verification || !res.device.trusted) {
+      if (res?.requires_device_verification || (res?.device && res.device.trusted === false)) {
         setLoading(false);
         setMode('new_device');
         return;
@@ -113,13 +133,13 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
       setLoadingMessage('Unlocking encrypted health vault...');
       const dek = await onUnlockVaultWithPassword(password);
       if (dek) {
-        onAuthSuccess(res.user, dek, res.device, password);
+        onAuthSuccess(user, dek, device, password);
       } else {
         // If local vault doesn't exist yet on this device, initialize it with password
         try {
           const recoverySecret = generateMasterRecoveryKey();
           const initRes = await onInitializeVault(password, recoverySecret);
-          onAuthSuccess(res.user, initRes.dek, res.device, password);
+          onAuthSuccess(user, initRes.dek, device, password);
         } catch {
           setError('Vault password mismatch or local vault requires recovery key.');
           setMode('recovery_key_input');
@@ -150,8 +170,27 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
     setLoadingMessage('Creating secure account...');
 
     try {
-      // 1. Register with Django
+      // 1. Register with backend / local
       const regRes = await authApi.register(fullName.trim(), email.trim(), password);
+
+      const meta = getClientDeviceMetadata();
+      const user: UserProfile = regRes?.user || {
+        id: `usr_${Date.now().toString(36)}`,
+        name: fullName.trim() || 'Patient',
+        email: email.trim().toLowerCase(),
+        is_staff: false,
+        is_superuser: false,
+        created_at: new Date().toISOString(),
+      };
+      const device: DeviceInfo = regRes?.device || {
+        device_id: meta.device_id,
+        device_name: meta.device_name,
+        platform: meta.platform,
+        browser: meta.browser,
+        trusted: true,
+        created_at: new Date().toISOString(),
+        last_seen_at: new Date().toISOString(),
+      };
 
       // 2. Generate random Recovery Secret and initialize browser envelope vault
       const recoverySecret = generateMasterRecoveryKey();
@@ -160,8 +199,8 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
 
       setGeneratedRecoveryKey(recoverySecret);
       setTempDEK(dek);
-      setTempUser(regRes.user);
-      setTempDevice(regRes.device);
+      setTempUser(user);
+      setTempDevice(device);
 
       // 3. Show Recovery Key presentation modal
       setMode('recovery_key_display');
@@ -171,6 +210,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
       setLoading(false);
     }
   };
+
 
   // --- 3. HANDLE RECOVERY CONFIRMATION ---
   const handleConfirmRecoverySaved = async () => {
