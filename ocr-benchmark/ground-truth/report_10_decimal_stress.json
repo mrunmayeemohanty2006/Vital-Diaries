@@ -1,0 +1,30 @@
+{
+  "reportId": "report_10_decimal_stress",
+  "title": "High-Precision Decimal Stress Vector",
+  "groundTruth": {
+    "Serum Creatinine": {
+      "value": 0.85,
+      "unit": "mg/dL",
+      "referenceRange": "0.70 - 1.20",
+      "status": "normal"
+    },
+    "Bilirubin Total": {
+      "value": 0.72,
+      "unit": "mg/dL",
+      "referenceRange": "0.20 - 1.20",
+      "status": "normal"
+    },
+    "TSH": {
+      "value": 2.14,
+      "unit": "uIU/mL",
+      "referenceRange": "0.40 - 4.50",
+      "status": "normal"
+    },
+    "HbA1c": {
+      "value": 5.4,
+      "unit": "%",
+      "referenceRange": "4.0 - 5.6",
+      "status": "normal"
+    }
+  }
+}

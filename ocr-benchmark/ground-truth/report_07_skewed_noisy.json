@@ -1,0 +1,30 @@
+{
+  "reportId": "report_07_skewed_noisy",
+  "title": "Thyroid & Iron Studies (Skewed Scan Stress Vector)",
+  "groundTruth": {
+    "TSH": {
+      "value": 3.82,
+      "unit": "uIU/mL",
+      "referenceRange": "0.40 - 4.50",
+      "status": "normal"
+    },
+    "Total T3": {
+      "value": 1.28,
+      "unit": "ng/mL",
+      "referenceRange": "0.80 - 2.00",
+      "status": "normal"
+    },
+    "Serum Iron": {
+      "value": 45,
+      "unit": "ug/dL",
+      "referenceRange": "60 - 170",
+      "status": "low"
+    },
+    "Ferritin": {
+      "value": 18,
+      "unit": "ng/mL",
+      "referenceRange": "15 - 150",
+      "status": "normal"
+    }
+  }
+}

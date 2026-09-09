@@ -1,0 +1,30 @@
+{
+  "reportId": "report_05_vitamins",
+  "title": "Vitamins & Nutritional Deficiencies Panel",
+  "groundTruth": {
+    "Vitamin B12": {
+      "value": 284,
+      "unit": "pg/mL",
+      "referenceRange": "200 - 900",
+      "status": "normal"
+    },
+    "Folate": {
+      "value": 4.8,
+      "unit": "ng/mL",
+      "referenceRange": "3.0 - 17.0",
+      "status": "normal"
+    },
+    "Vitamin D": {
+      "value": 16.2,
+      "unit": "ng/mL",
+      "referenceRange": "30 - 100",
+      "status": "low"
+    },
+    "Serum Calcium": {
+      "value": 9.1,
+      "unit": "mg/dL",
+      "referenceRange": "8.6 - 10.2",
+      "status": "normal"
+    }
+  }
+}

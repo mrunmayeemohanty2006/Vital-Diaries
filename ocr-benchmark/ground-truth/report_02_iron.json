@@ -1,0 +1,36 @@
+{
+  "reportId": "report_02_iron",
+  "title": "Comprehensive Iron Studies & Ferritin Panel",
+  "groundTruth": {
+    "Serum Iron": {
+      "value": 38,
+      "unit": "ug/dL",
+      "referenceRange": "60 - 170",
+      "status": "low"
+    },
+    "TIBC": {
+      "value": 410,
+      "unit": "ug/dL",
+      "referenceRange": "250 - 450",
+      "status": "normal"
+    },
+    "UIBC": {
+      "value": 372,
+      "unit": "ug/dL",
+      "referenceRange": "150 - 350",
+      "status": "high"
+    },
+    "Transferrin Saturation": {
+      "value": 9.3,
+      "unit": "%",
+      "referenceRange": "20 - 50",
+      "status": "low"
+    },
+    "Ferritin": {
+      "value": 12,
+      "unit": "ng/mL",
+      "referenceRange": "15 - 150",
+      "status": "low"
+    }
+  }
+}

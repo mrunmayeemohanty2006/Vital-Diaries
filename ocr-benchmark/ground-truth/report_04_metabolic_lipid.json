@@ -1,0 +1,42 @@
+{
+  "reportId": "report_04_metabolic_lipid",
+  "title": "Comprehensive Metabolic & Lipid Profile",
+  "groundTruth": {
+    "Fasting Blood Sugar": {
+      "value": 108,
+      "unit": "mg/dL",
+      "referenceRange": "70 - 100",
+      "status": "high"
+    },
+    "HbA1c": {
+      "value": 5.9,
+      "unit": "%",
+      "referenceRange": "4.0 - 5.6",
+      "status": "high"
+    },
+    "Total Cholesterol": {
+      "value": 224,
+      "unit": "mg/dL",
+      "referenceRange": "125 - 200",
+      "status": "high"
+    },
+    "Triglycerides": {
+      "value": 165,
+      "unit": "mg/dL",
+      "referenceRange": "50 - 150",
+      "status": "high"
+    },
+    "HDL Cholesterol": {
+      "value": 42,
+      "unit": "mg/dL",
+      "referenceRange": "40 - 60",
+      "status": "normal"
+    },
+    "LDL Cholesterol": {
+      "value": 149,
+      "unit": "mg/dL",
+      "referenceRange": "50 - 100",
+      "status": "high"
+    }
+  }
+}

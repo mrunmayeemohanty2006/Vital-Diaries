@@ -1,0 +1,24 @@
+{
+  "reportId": "report_03_thyroid",
+  "title": "Thyroid Function Test (TFT) Panel",
+  "groundTruth": {
+    "TSH": {
+      "value": 5.48,
+      "unit": "uIU/mL",
+      "referenceRange": "0.40 - 4.50",
+      "status": "high"
+    },
+    "Total T3": {
+      "value": 1.15,
+      "unit": "ng/mL",
+      "referenceRange": "0.80 - 2.00",
+      "status": "normal"
+    },
+    "Total T4": {
+      "value": 6.8,
+      "unit": "ug/dL",
+      "referenceRange": "5.1 - 14.1",
+      "status": "normal"
+    }
+  }
+}

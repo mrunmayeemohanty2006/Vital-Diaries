@@ -8,7 +8,10 @@
     "build": "vite build && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs",
     "start": "node dist/server.cjs",
     "clean": "rm -rf dist server.js",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "test": "tsx src/lib/__tests__/ocr-groundtruth-diagnostic.test.ts && tsx src/lib/__tests__/abnormal-panel-ocr-extractor.test.ts && tsx src/lib/__tests__/generalized-document-extraction.test.ts && tsx src/lib/__tests__/decrypt-view-pipeline.test.ts && tsx src/lib/__tests__/dynamic-lab-insights.test.ts",
+    "benchmark": "tsx ocr-benchmark/benchmark-runner.ts",
+    "knowledge:crawl": "tsx knowledge-pipeline/crawler/crawler.ts"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

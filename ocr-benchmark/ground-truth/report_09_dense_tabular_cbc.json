@@ -1,0 +1,30 @@
+{
+  "reportId": "report_09_dense_tabular_cbc",
+  "title": "Dense Tabular CBC (Zero Vertical Grid Lines)",
+  "groundTruth": {
+    "MCV": {
+      "value": 88.2,
+      "unit": "fL",
+      "referenceRange": "80.0 - 96.0",
+      "status": "normal"
+    },
+    "MCH": {
+      "value": 29.4,
+      "unit": "pg",
+      "referenceRange": "26.0 - 32.0",
+      "status": "normal"
+    },
+    "MCHC": {
+      "value": 33.1,
+      "unit": "g/dL",
+      "referenceRange": "31.0 - 36.0",
+      "status": "normal"
+    },
+    "RDW": {
+      "value": 12.6,
+      "unit": "%",
+      "referenceRange": "11.5 - 14.5",
+      "status": "normal"
+    }
+  }
+}

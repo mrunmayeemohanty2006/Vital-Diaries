@@ -29,7 +29,6 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    // Load list automatically
     handleFetchDriveList();
   }, []);
 
@@ -82,7 +81,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-stone-900/60 dark:bg-black/70 backdrop-blur-md flex items-center justify-center p-3.5 sm:p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-stone-900/60 dark:bg-black/75 backdrop-blur-md flex items-center justify-center p-3.5 sm:p-4 overflow-y-auto">
       <div className="bg-white dark:bg-stone-900 max-w-xl w-full rounded-2xl sm:rounded-[2.5rem] border border-stone-200 dark:border-stone-800 shadow-2xl p-4 sm:p-6 sm:p-8 my-auto max-h-[92vh] overflow-y-auto text-stone-900 dark:text-stone-100">
         <div className="flex items-center justify-between pb-4 mb-6 border-b border-stone-100 dark:border-stone-800">
           <div className="flex items-center gap-3">
@@ -104,15 +103,15 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
 
         <div className="space-y-6">
           {/* Account Connection Status */}
-          <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200 flex items-center justify-between">
+          <div className="p-4 bg-stone-50 dark:bg-stone-800/60 rounded-2xl border border-stone-200 dark:border-stone-700 flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2">
                 <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-emerald-500' : 'bg-amber-500'}`} />
-                <span className="font-bold text-stone-900 text-sm">
+                <span className="font-bold text-stone-900 dark:text-stone-100 text-sm">
                   {isConnected ? 'Google Drive Connected' : 'Drive Standby Mode'}
                 </span>
               </div>
-              <p className="text-xs text-stone-500 mt-0.5">
+              <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
                 {userAccount.email ? `Account: ${userAccount.email}` : 'Google OAuth client ready'}
               </p>
             </div>
@@ -120,14 +119,14 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
             {!isConnected ? (
               <button
                 onClick={handleConnectDrive}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs transition-colors shadow-2xs"
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs transition-colors shadow-2xs cursor-pointer"
               >
                 Connect Account
               </button>
             ) : (
               <button
                 onClick={() => setIsConnected(false)}
-                className="px-3 py-1.5 bg-stone-200 hover:bg-stone-300 text-stone-800 font-semibold rounded-xl text-xs"
+                className="px-3 py-1.5 bg-stone-200 dark:bg-stone-700 hover:bg-stone-300 dark:hover:bg-stone-600 text-stone-800 dark:text-stone-200 font-semibold rounded-xl text-xs cursor-pointer"
               >
                 Disconnect
               </button>
@@ -135,8 +134,8 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
           </div>
 
           {statusMessage && (
-            <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-xl font-medium flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+            <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-200 text-xs rounded-xl font-medium flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <span>{statusMessage}</span>
             </div>
           )}
@@ -146,7 +145,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
             <button
               onClick={handleUploadToDrive}
               disabled={isLoading || !encryptionKey}
-              className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-colors shadow-2xs disabled:opacity-50"
+              className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-colors shadow-2xs disabled:opacity-50 cursor-pointer"
             >
               <Upload className="w-4 h-4" />
               <span>Upload Fresh Backup</span>
@@ -155,7 +154,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
             <button
               onClick={handleFetchDriveList}
               disabled={isLoading}
-              className="p-3 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-xl transition-colors border border-stone-200"
+              className="p-3 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 rounded-xl transition-colors border border-stone-200 dark:border-stone-700 cursor-pointer"
               title="Refresh Drive List"
             >
               <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
@@ -164,7 +163,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
 
           {/* Available Drive Backups */}
           <div>
-            <h3 className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-3">
+            <h3 className="text-xs font-bold text-stone-400 dark:text-stone-400 uppercase tracking-widest mb-3">
               Available Cloud Backups
             </h3>
 
@@ -172,15 +171,15 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
               {driveFiles.map((file) => (
                 <div
                   key={file.id}
-                  className="p-3 bg-white border border-stone-200 rounded-xl flex justify-between items-center hover:border-emerald-300 transition-colors"
+                  className="p-3 bg-white dark:bg-stone-800/60 border border-stone-200 dark:border-stone-700 rounded-xl flex justify-between items-center hover:border-emerald-300 dark:hover:border-emerald-600 transition-colors"
                 >
                   <div>
-                    <span className="font-mono font-bold text-stone-900 text-xs block">{file.name}</span>
-                    <span className="text-[10px] text-stone-400">{formatDate(file.createdTime)}</span>
+                    <span className="font-mono font-bold text-stone-900 dark:text-stone-100 text-xs block">{file.name}</span>
+                    <span className="text-[10px] text-stone-400 dark:text-stone-500">{formatDate(file.createdTime)}</span>
                   </div>
 
-                  <span className="px-2 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded-md flex items-center gap-1">
-                    <Lock className="w-3 h-3 text-emerald-600" />
+                  <span className="px-2 py-1 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 text-[10px] font-bold rounded-md flex items-center gap-1">
+                    <Lock className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
                     Encrypted
                   </span>
                 </div>
@@ -188,7 +187,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
             </div>
           </div>
 
-          <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200 text-xs text-stone-600 leading-relaxed flex items-start gap-2">
+          <div className="p-4 bg-stone-50 dark:bg-stone-800/60 rounded-2xl border border-stone-200 dark:border-stone-700 text-xs text-stone-600 dark:text-stone-300 leading-relaxed flex items-start gap-2">
             <Lock className="w-4 h-4 text-stone-500 shrink-0 mt-0.5" />
             <span>
               Files uploaded to Google Drive remain encrypted with your master passphrase. Google cannot read your health records.

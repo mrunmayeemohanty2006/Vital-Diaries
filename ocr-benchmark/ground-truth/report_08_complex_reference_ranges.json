@@ -1,0 +1,30 @@
+{
+  "reportId": "report_08_complex_reference_ranges",
+  "title": "Comprehensive Hematology (Multi-Tier Stratified Reference Intervals)",
+  "groundTruth": {
+    "Hemoglobin": {
+      "value": 13.4,
+      "unit": "g/dL",
+      "referenceRange": "13.0 - 17.0",
+      "status": "normal"
+    },
+    "Total RBC": {
+      "value": 4.85,
+      "unit": "million/uL",
+      "referenceRange": "4.50 - 5.90",
+      "status": "normal"
+    },
+    "Hematocrit": {
+      "value": 41.2,
+      "unit": "%",
+      "referenceRange": "40.0 - 50.0",
+      "status": "normal"
+    },
+    "Platelet Count": {
+      "value": 1.95,
+      "unit": "lakh/uL",
+      "referenceRange": "1.5 - 4.5",
+      "status": "normal"
+    }
+  }
+}

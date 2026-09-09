@@ -12,7 +12,7 @@ interface SidebarProps {
 export const NAV_ITEMS = [
   { id: 'dashboard' as ActiveTab, label: 'Dashboard', icon: LayoutDashboard },
   { id: 'records' as ActiveTab, label: 'Health Records', icon: FileText },
-  { id: 'ai-advisor' as ActiveTab, label: 'AI Diet & Lab Insights', icon: Sparkles },
+  { id: 'ai-advisor' as ActiveTab, label: 'Get Insights', icon: Activity },
   { id: 'vitals' as ActiveTab, label: 'Vitals & Metrics', icon: Activity },
   { id: 'medications' as ActiveTab, label: 'Medications', icon: Pill },
   { id: 'profile' as ActiveTab, label: 'My Health Profile', icon: User },
@@ -22,7 +22,7 @@ export const NAV_ITEMS = [
 export const TAB_LABELS: Record<ActiveTab, string> = {
   'dashboard': 'Dashboard',
   'records': 'Health Records',
-  'ai-advisor': 'AI Diet & Lab Insights',
+  'ai-advisor': 'Get Insights',
   'vitals': 'Vitals & Metrics',
   'medications': 'Medications',
   'profile': 'My Health Profile',

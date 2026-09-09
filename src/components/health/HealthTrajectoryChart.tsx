@@ -522,15 +522,15 @@ export const HealthTrajectoryChart: React.FC<HealthTrajectoryChartProps> = ({
 
       {/* Connected Uploaded Files Bar */}
       {connectedRecords.length > 0 && (
-        <div className="bg-emerald-50/50 p-3.5 rounded-2xl border border-emerald-100 space-y-2">
+        <div className="bg-emerald-50/70 dark:bg-emerald-950/40 p-3.5 rounded-2xl border border-emerald-200/80 dark:border-emerald-800/60 space-y-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <FileText className="w-4 h-4 text-emerald-700" />
-              <span className="text-xs font-bold text-emerald-900">
+              <FileText className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
+              <span className="text-xs font-bold text-emerald-900 dark:text-emerald-200">
                 Connected Uploaded Files ({connectedRecords.length})
               </span>
             </div>
-            <span className="text-[10px] text-emerald-700 font-medium">
+            <span className="text-[10px] text-emerald-700 dark:text-emerald-400 font-medium">
               {hasEnoughRecordsForComparison
                 ? 'Plotting chronological comparison trajectory'
                 : 'Upload 1 more record to compute health increment/decrement'}
@@ -540,11 +540,11 @@ export const HealthTrajectoryChart: React.FC<HealthTrajectoryChartProps> = ({
             {connectedRecords.map((rec) => (
               <div
                 key={rec.id}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-emerald-200 rounded-xl text-xs font-semibold text-stone-800 shadow-2xs"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-stone-800 border border-emerald-200 dark:border-emerald-800/60 rounded-xl text-xs font-semibold text-stone-800 dark:text-stone-200 shadow-2xs"
               >
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span className="font-bold">{rec.title}</span>
-                <span className="text-[10px] text-stone-400">({rec.date || 'Record'})</span>
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <span className="font-bold text-stone-900 dark:text-stone-100">{rec.title}</span>
+                <span className="text-[10px] text-stone-400 dark:text-stone-400">({rec.date || 'Record'})</span>
               </div>
             ))}
           </div>
@@ -552,22 +552,22 @@ export const HealthTrajectoryChart: React.FC<HealthTrajectoryChartProps> = ({
       )}
 
       {/* Main Graph Area */}
-      <div className="relative h-64 sm:h-72 w-full pt-2 rounded-2xl bg-stone-50/50 border border-stone-100 overflow-hidden flex flex-col justify-center items-center">
+      <div className="relative h-64 sm:h-72 w-full pt-2 rounded-2xl bg-stone-50/50 dark:bg-stone-800/40 border border-stone-200 dark:border-stone-800 overflow-hidden flex flex-col justify-center items-center">
         {!hasData && (
-          <div className="absolute inset-0 z-10 bg-white/80 backdrop-blur-[1px] flex flex-col items-center justify-center p-6 text-center space-y-3">
-            <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl border border-emerald-200 flex items-center justify-center shadow-2xs">
+          <div className="absolute inset-0 z-10 bg-white/80 dark:bg-stone-900/80 backdrop-blur-[1px] flex flex-col items-center justify-center p-6 text-center space-y-3">
+            <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 rounded-2xl border border-emerald-200 dark:border-emerald-800 flex items-center justify-center shadow-2xs">
               <BarChart2 className="w-6 h-6" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-stone-900">No Uploaded Health Records Found</h4>
-              <p className="text-xs text-stone-500 max-w-sm mt-0.5">
+              <h4 className="text-sm font-bold text-stone-900 dark:text-stone-100">No Uploaded Health Records Found</h4>
+              <p className="text-xs text-stone-500 dark:text-stone-400 max-w-sm mt-0.5">
                 Upload at least 2 health record files (e.g. Lab reports, Blood Work, Prescriptions) to compare dates and measure health increment or decrement levels.
               </p>
             </div>
             {onAddDataClick && (
               <button
                 onClick={onAddDataClick}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-2xs transition-all"
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer"
               >
                 <PlusCircle className="w-4 h-4" />
                 <span>+ Upload Health File</span>
@@ -588,19 +588,19 @@ export const HealthTrajectoryChart: React.FC<HealthTrajectoryChartProps> = ({
               </linearGradient>
             </defs>
 
-            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" className="dark:opacity-20" vertical={false} />
 
             <XAxis
               dataKey="date"
               tickLine={false}
               axisLine={false}
-              tick={{ fontSize: 11, fill: '#64748b', fontWeight: 600 }}
+              tick={{ fontSize: 11, fill: '#94a3b8', fontWeight: 600 }}
             />
 
             <YAxis
               tickLine={false}
               axisLine={false}
-              tick={{ fontSize: 11, fill: '#64748b' }}
+              tick={{ fontSize: 11, fill: '#94a3b8' }}
               domain={[0, 120]}
             />
 
@@ -610,7 +610,7 @@ export const HealthTrajectoryChart: React.FC<HealthTrajectoryChartProps> = ({
                   if (active && payload && payload.length) {
                     const data = payload[0].payload as MetricPoint;
                     return (
-                      <div className="bg-stone-900 text-white p-3 rounded-xl shadow-xl text-xs border border-stone-800 space-y-1 max-w-xs">
+                      <div className="bg-stone-900 dark:bg-stone-950 text-white p-3 rounded-xl shadow-xl text-xs border border-stone-800 space-y-1 max-w-xs">
                         <div className="font-bold text-emerald-400 border-b border-stone-800 pb-1 flex items-center justify-between gap-4">
                           <span>{data.title} ({label})</span>
                           <span className="text-[10px] font-semibold px-1.5 py-0.5 bg-emerald-950 text-emerald-300 rounded border border-emerald-800">
@@ -664,14 +664,14 @@ export const HealthTrajectoryChart: React.FC<HealthTrajectoryChartProps> = ({
         </ResponsiveContainer>
       </div>
 
-      <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 flex items-center justify-between text-xs text-stone-600">
+      <div className="p-3 bg-stone-50 dark:bg-stone-800/60 rounded-xl border border-stone-200 dark:border-stone-800 flex items-center justify-between text-xs text-stone-600 dark:text-stone-300">
         <div className="flex items-center gap-2">
-          <Info className="w-4 h-4 text-emerald-600 shrink-0" />
+          <Info className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
           <span>
             Trajectory graphs strictly plot uploaded health record files chronologically to calculate health increments or decrements (requires 2 or more files).
           </span>
         </div>
-        <span className="text-[10px] font-bold uppercase text-stone-400 tracking-wider">
+        <span className="text-[10px] font-bold uppercase text-stone-400 dark:text-stone-400 tracking-wider">
           Uploaded File Analysis
         </span>
       </div>

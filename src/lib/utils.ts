@@ -43,6 +43,16 @@ export function formatRelativeTime(dateString?: string): string {
 }
 
 /**
+ * Formats byte size into human readable string (KB, MB)
+ */
+export function formatFileSize(bytes?: number): string {
+  if (!bytes || isNaN(bytes) || bytes <= 0) return '0 B';
+  const units = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${units[i] || 'MB'}`;
+}
+
+/**
  * Seeds initial encrypted sample medical records into IndexedDB if vault is empty
  */
 export async function seedInitialSampleData(key: CryptoKey, userId: string): Promise<void> {

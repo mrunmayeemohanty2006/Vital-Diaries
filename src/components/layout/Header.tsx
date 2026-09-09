@@ -10,6 +10,7 @@ interface HeaderProps {
   onLockVault: () => void;
   onUnlockVault: () => void;
   onOpenRecoveryKey: () => void;
+  onLogout?: () => void;
   userId: string;
   userName?: string;
   currentTheme: AppTheme;
@@ -22,6 +23,7 @@ export const Header: React.FC<HeaderProps> = ({
   onLockVault,
   onUnlockVault,
   onOpenRecoveryKey,
+  onLogout,
   userId,
   userName,
   currentTheme,
@@ -227,11 +229,24 @@ export const Header: React.FC<HeaderProps> = ({
                       onLockVault();
                       setIsProfileMenuOpen(false);
                     }}
-                    className="w-full px-3 py-2 text-left rounded-xl text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 flex items-center gap-2 transition-colors"
+                    className="w-full px-3 py-2 text-left rounded-xl text-xs font-semibold text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 flex items-center gap-2 transition-colors cursor-pointer"
                   >
-                    <Lock className="w-3.5 h-3.5 text-rose-500" />
+                    <Lock className="w-3.5 h-3.5 text-stone-400" />
                     <span>Lock Vault</span>
                   </button>
+                  {onLogout && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onLogout();
+                        setIsProfileMenuOpen(false);
+                      }}
+                      className="w-full px-3 py-2 text-left rounded-xl text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 flex items-center gap-2 transition-colors cursor-pointer"
+                    >
+                      <Lock className="w-3.5 h-3.5 text-rose-500" />
+                      <span>Sign Out</span>
+                    </button>
+                  )}
                 </div>
               </div>
             </>

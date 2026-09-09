@@ -26,9 +26,37 @@ export interface DecryptedReportDetails {
   facility?: string;
   notes?: string;
   results: Record<string, string | number | boolean>;
+  metrics?: Array<{
+    name: string;
+    rawName?: string;
+    value: number | string;
+    unit: string;
+    displayValue: string;
+    referenceRange?: {
+      low?: number;
+      high?: number;
+      rawText?: string;
+      unit?: string;
+    };
+    status?: 'low' | 'normal' | 'high' | 'unknown' | 'low-normal' | 'high-normal';
+    ocrStatus?: 'low' | 'normal' | 'high' | 'low-normal' | 'high-normal';
+    method?: string;
+    needsVerification?: boolean;
+    verificationReason?: string;
+    source?: 'pdf-text' | 'ocr';
+  }>;
   recommendations?: string[];
   tags?: string[];
   attachmentsCount?: number;
+  // Preserved original file & timestamp metadata (100% AES-GCM encrypted in IndexedDB)
+  fileName?: string;
+  fileType?: string;         // MIME type (application/pdf, image/png, image/jpeg, etc.)
+  fileSize?: number;         // Size in bytes
+  fileLastModified?: string; // ISO timestamp from file.lastModified
+  uploadedAt?: string;       // ISO timestamp when user uploaded
+  reportDate?: string;       // Extracted medical collection/report date
+  fileBase64?: string;       // Exact original file base64 data string (encrypted in ciphertext)
+  fileDataUrl?: string;      // Base64 data URL
 }
 
 export interface VitalLogEntry {

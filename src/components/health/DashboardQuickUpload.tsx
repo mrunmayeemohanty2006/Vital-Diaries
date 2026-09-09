@@ -49,11 +49,23 @@ export const DashboardQuickUpload: React.FC<DashboardQuickUploadProps> = ({
 
       const ocrText = ocrResult.text;
 
+      // Diagnostic Logging: Expose exact raw Tesseract OCR output before extraction
+      if (ocrResult.pageResults && ocrResult.pageResults.length > 0) {
+        ocrResult.pageResults.forEach((p) => {
+          console.log(`===== OCR PAGE ${p.pageNum} =====\n${p.text}`);
+        });
+      }
+      console.log(`===== VITAL DIARIES RAW OCR START =====\n${ocrText}\n===== VITAL DIARIES RAW OCR END =====`);
+
       // 2. Perform 100% Local Health Data Extraction
       setUploadStatus('Parsing health metrics locally...');
-      const extractedData = extractHealthData(ocrText);
+      console.error("VITAL_DIARIES_CALLER", "DashboardQuickUpload", {
+        inputOcrLength: ocrText?.length ?? 0,
+        fileName: file.name
+      });
+      const extractedData = extractHealthData(ocrText, { source: ocrResult.source });
 
-      // 3. Read file as Data URL locally for file attachment storage
+      // 3. Read file as Data URL / Base64 locally for exact original file byte storage
       const dataUrl = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result as string);
@@ -61,25 +73,42 @@ export const DashboardQuickUpload: React.FC<DashboardQuickUploadProps> = ({
         reader.readAsDataURL(file);
       });
 
+      const base64Data = dataUrl.includes(',') ? dataUrl.split(',')[1] : dataUrl;
+
+      // Determine best available date: 1) Report date in OCR, 2) file.lastModified, 3) Today
+      let bestDate = new Date().toISOString().split('T')[0];
+      if (extractedData.extractedDate) {
+        bestDate = extractedData.extractedDate;
+      } else if (file.lastModified) {
+        const modDate = new Date(file.lastModified);
+        if (!isNaN(modDate.getTime())) {
+          bestDate = modDate.toISOString().split('T')[0];
+        }
+      }
+
       const parsedTitle = extractedData.title || file.name.replace(/\.[^/.]+$/, '');
       const parsedType: HealthReport['type'] = extractedData.reportType || 'general';
       const doctorName = 'Self Upload';
       const extractedResults: Record<string, string> = extractedData.results || {};
       const extractedNotes = extractedData.summary || `Uploaded file: ${file.name}`;
 
-      // 4. Build report payload
+      // 4. Build complete encrypted report payload with exact original file bytes & timestamps
       const rawPayload = JSON.stringify({
         reportType: parsedTitle,
         notes: extractedNotes,
         results: extractedResults,
+        metrics: extractedData.metrics,
         fileName: file.name,
-        fileType: file.type,
+        fileType: file.type || 'application/octet-stream',
         fileSize: file.size,
-        fileDataUrl: dataUrl,
+        fileLastModified: file.lastModified ? new Date(file.lastModified).toISOString() : undefined,
+        uploadedAt: new Date().toISOString(),
+        reportDate: bestDate,
+        fileBase64: base64Data,
       });
 
-      // 5. AES-256-GCM Encrypt locally before IndexedDB write
-      setUploadStatus('Encrypting report locally with AES-256-GCM...');
+      // 5. AES-256-GCM Encrypt locally before IndexedDB write (Zero external transmission)
+      setUploadStatus('Encrypting original file locally with AES-256-GCM...');
       const { cipherText, iv } = await encryptData(rawPayload, activeKey);
 
       const activeUserId = userId || `usr_${Date.now().toString(36)}`;
@@ -87,7 +116,7 @@ export const DashboardQuickUpload: React.FC<DashboardQuickUploadProps> = ({
       const newReport: HealthReport = {
         id: `rep_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
         userId: activeUserId,
-        date: new Date().toISOString().split('T')[0],
+        date: bestDate,
         type: parsedType,
         title: parsedTitle,
         doctorName,
@@ -205,15 +234,15 @@ export const DashboardQuickUpload: React.FC<DashboardQuickUploadProps> = ({
       </div>
 
       {uploadStatus && !isUploading && (
-        <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-xl text-xs font-semibold flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+        <div className="p-3 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60 text-emerald-900 dark:text-emerald-200 rounded-xl text-xs font-semibold flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
           <span>{uploadStatus}</span>
         </div>
       )}
 
       {error && (
-        <div className="p-3 bg-red-50 border border-red-200 text-red-800 rounded-xl text-xs font-semibold flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+        <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/60 text-red-800 dark:text-red-200 rounded-xl text-xs font-semibold flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400 shrink-0" />
           <span>{error}</span>
         </div>
       )}

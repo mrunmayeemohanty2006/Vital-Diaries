@@ -1,0 +1,596 @@
+{
+  "marker": "hemoglobin",
+  "generatedAt": "2026-09-02T13:35:01.860Z",
+  "pipelineVersion": "1.0.0",
+  "allowlistValidated": true,
+  "totalSources": 4,
+  "sources": [
+    {
+      "source": {
+        "id": "medlineplus-hemoglobin-test",
+        "organization": "MedlinePlus / National Library of Medicine",
+        "title": "Hemoglobin Test: MedlinePlus Medical Test",
+        "url": "https://medlineplus.gov/lab-tests/hemoglobin-test/",
+        "domain": "medlineplus.gov",
+        "sourceType": "government",
+        "accessedAt": "2026-09-02",
+        "lastReviewedAt": "2026-09-02",
+        "description": "Clinical overview of hemoglobin blood tests, reference ranges, and low/high associations."
+      },
+      "extracted": {
+        "title": "Hemoglobin Test: MedlinePlus Medical Test",
+        "headings": [
+          "Hemoglobin Test",
+          "What is a Hemoglobin Test?",
+          "What is it used for?",
+          "Why do I need a hemoglobin test?",
+          "What happens during a hemoglobin test?",
+          "Will I need to do anything to prepare for the test?",
+          "Are there any risks to the test?",
+          "What do the results mean?",
+          "Is there anything else I need to know about a hemoglobin test?",
+          "References"
+        ],
+        "paragraphs": [
+          "Hemoglobin Test: MedlinePlus Medical Test Skip navigation Official websites use .gov A .gov website belongs to an official government organization in the United States.",
+          "Secure .gov websites use HTTPS A lock ( ) or https:// means you’ve safely connected to the .gov website. Share sensitive information only on official, secure websites.",
+          "A hemoglobin test measures the levels of hemoglobin in your blood. Hemoglobin is an iron-rich protein in your red blood cells. It carries oxygen from your lungs to the rest of your body. Your cells need oxygen to grow, reproduce, and make energy for you to function. Your hemoglobin levels provide information about the health of your red blood cells. If your hemoglobin levels are abnormal, it may be a sign that you have a blood disorder .",
+          "Other names: Hb, Hgb, H&H",
+          "A hemoglobin test is a blood test often used to check for anemia , a condition in which your body does not make enough healthy red blood cells. If you have anemia, the cells in your body don't get all the oxygen they need. Hemoglobin levels are usually measured as part of a complete blood count (CBC) . A CBC is a group of tests that measure the number and type of cells in your blood.",
+          "A hemoglobin test is not the same as a hemoglobin A1C test . The A1C test is used to check your average blood glucose (blood sugar).",
+          "Your health care provider may order the test as part of a routine exam , or if you have:",
+          "Symptoms of anemia, which include weakness, dizziness , and cold hands and feet",
+          "A family history of thalassemia , sickle cell anemia , or other inherited blood disorder",
+          "A diet low in iron and other minerals",
+          "A long-term infection",
+          "Excessive blood loss from an injury or surgical procedure",
+          "You may also need this test to monitor the treatment of anemia or the other health conditions that could affect your hemoglobin level.",
+          "A health care professional will take a blood sample from a vein in your arm, using a small needle. After the needle is inserted, a small amount of blood will be collected into a test tube or vial. You may feel a little sting when the needle goes in or out. This usually takes less than five minutes.",
+          "You don't need any special preparation for a hemoglobin test. If your provider has ordered other blood tests, you may need to fast (not eat or drink) for several hours before the test. Your provider will let you know if there are any special instructions.",
+          "There is very little risk to having a blood test. You may have slight pain or bruising at the spot where the needle was put in, but most symptoms go away quickly.",
+          "Your results will compare your hemoglobin level to the normal range, which may be called the reference range. This range may vary, based on the laboratory used and your age, race, and sex. The test can't tell you what's causing an abnormal level. But knowing how high or low your hemoglobin level is can help your provider determine how severe your condition may be.",
+          "Your hemoglobin levels may not be in the reference range for many reasons.",
+          "Low hemoglobin levels may be a sign of:",
+          "Different types of anemia",
+          "Cancer and other diseases",
+          "Blood loss from injury, a heavy menstrual period , or other problems",
+          "Lack of certain nutrients, such as iron or vitamin B-12",
+          "High hemoglobin levels may be a sign of:",
+          "Polycythemia vera, a disease which causes your bone marrow to make too many red blood cells",
+          "Sleep apnea , a disorder that causes you to repeatedly stop breathing during sleep",
+          "If any of your levels are abnormal, it doesn't always mean you have a medical condition that needs treatment. Living at a higher altitude can also cause a high hemoglobin level. Other factors that can affect your results can include:",
+          "Certain medicines",
+          "Certain genetic conditions",
+          "Talk with your provider if you have questions about your results. To understand your hemoglobin results, your provider will also consider your symptoms, medical history, and the results of other blood tests.",
+          "Learn more about laboratory tests, reference ranges, and understanding results .",
+          "Some forms of anemia are mild, while other types of anemia can be serious and even life threatening if not treated. If you are diagnosed with anemia, talk to your provider about the best treatment plan for you.",
+          "Cleveland Clinic: Health Library: Diagnostics & Testing [Internet]. Cleveland (OH): Cleveland Clinic; c2024. Blood Tests; [reviewed 2022 Dec 06; cited 2024 Jul 24]; [about 16 screens]. Available from: https://my.clevelandclinic.org/health/diagnostics/24508-blood-tests",
+          "Cleveland Clinic: Health Library: Diagnostics & Testing [Internet]. Cleveland (OH): Cleveland Clinic; c2024. Hemoglobin Test; [reviewed 2022 Jul 18; cited 2024 Jul 24]; [about 6 screens]. Available from: https://my.clevelandclinic.org/health/diagnostics/17790-hemoglobin-test",
+          "Cleveland Clinic: Health Library: Symptoms [Internet]. Cleveland (OH): Cleveland Clinic; c2024. High Hemoglobin; [reviewed 2022 Jun 20; cited 2024 Jul 24]; [about 7 screens]. Available from: https://my.clevelandclinic.org/health/symptoms/17789-high-hemoglobin-count",
+          "Cleveland Clinic: Health Library: Symptoms [Internet]. Cleveland (OH): Cleveland Clinic; c2024. Low Hemoglobin; [reviewed 2022 May 04; cited 2024 Jul 24]; [about 7 screens]. Available from: https://my.clevelandclinic.org/health/symptoms/17705-low-hemoglobin",
+          "Familydoctor.org [Internet]. Leawood (KS): American Academy of Family Physicians; c2024; Anemia; [updated 2023 Sep; cited 2024 Jul 24]; [about 7 screens]. Available from: https://familydoctor.org/condition/anemia/",
+          "Freeman AM, Rai M, Morando DW. Anemia Screening. [Updated 2023 Jul 25; cited 2024 Jul 24]; [about 7 screens]. In: StatPearls [Internet]. Treasure Island (FL): StatPearls Publishing; 2024 Jan-. Available from: https://www.ncbi.nlm.nih.gov/books/NBK499905/",
+          "Mayo Clinic [Internet]. Mayo Foundation for Medical Education and Research; c1998-2024. Hemoglobin Test; [cited 2024 Jul 24]; [about 5 screens]. Available from: https://www.mayoclinic.org/tests-procedures/hemoglobin-test/about/pac-20385075",
+          "National Center for Advancing Translational Sciences/Genetic and Rare Diseases Information Center [Internet]. Gaithersburg (MD): U.S. Department of Health and Human Services; Polycythemia Vera; [2022 Jun; cited 2024 Jul 24]; [about 5 screens]. Available from: https://rarediseases.info.nih.gov/diseases/7422/polycythemia-vera",
+          "National Heart, Lung, and Blood Institute [Internet]. Bethesda (MD): U.S. Department of Health and Human Services; Anemia; [updated 2022 Mar 24; cited 2024 Jul 24]; [about 2 screens]. Available from: https://www.nhlbi.nih.gov/health/anemia",
+          "National Heart, Lung, and Blood Institute [Internet]. Bethesda (MD): U.S. Department of Health and Human Services; Anemia: Diagnosis; [updated 2022 Mar 24; cited 2024 Jul 24]; [about 3 screens]. Available from: https://www.nhlbi.nih.gov/health/anemia/diagnosis",
+          "National Heart, Lung, and Blood Institute [Internet]. Bethesda (MD): U.S. Department of Health and Human Services; Anemia: Iron-Deficiency Anemia; [updated 2022 Mar 24; cited 2024 Jul 24]; [about 7 screens]. Available from: https://www.nhlbi.nih.gov/health/anemia/iron-deficiency-anemia",
+          "Nemours KidsHealth [Internet]. Jacksonville (FL): The Nemours Foundation; c1995-2024. Blood Test: Hemoglobin [reviewed 2023 Aug; cited 2024 Jul 24]; [about 2 screens]. Available from: https://kidshealth.org/en/parents/blood-test-hemoglobin.html",
+          "Nemours KidsHealth [Internet]. Jacksonville (FL): The Nemours Foundation; c1995-2024. Getting a Blood Test; [reviewed 2021 Sep; cited 2024 Jul 24]; [about 4 screens]. Available from: https://kidshealth.org/en/parents/blood-tests.html",
+          "Testing.com [Internet]. Seattle (WA): OneCare Media; c2024. Hemoglobin Blood Test; [modified 2021 Nov 9; cited 2024 Jul 24]; [about 9 screens]. Available from: https://www.testing.com/tests/hemoglobin/",
+          "The information on this site should not be used as a substitute for professional medical care or advice. Contact a health care provider if you have questions about your health."
+        ],
+        "cleanText": "Hemoglobin Test: MedlinePlus Medical Test Skip navigation Official websites use .gov A .gov website belongs to an official government organization in the United States. Secure .gov websites use HTTPS A lock ( ) or https:// means you’ve safely connected to the .gov website. Share sensitive information only on official, secure websites. You Are Here: Home &rarr; Medical Tests &rarr; Hemoglobin Test URL of this page: https://medlineplus.gov/lab-tests/hemoglobin-test/ Hemoglobin Test What is a Hemoglobin Test? A hemoglobin test measures the levels of hemoglobin in your blood. Hemoglobin is an iron-rich protein in your red blood cells. It carries oxygen from your lungs to the rest of your body. Your cells need oxygen to grow, reproduce, and make energy for you to function. Your hemoglobin levels provide information about the health of your red blood cells. If your hemoglobin levels are abnormal, it may be a sign that you have a blood disorder . Other names: Hb, Hgb, H&H What is it used for? A hemoglobin test is a blood test often used to check for anemia , a condition in which your body does not make enough healthy red blood cells. If you have anemia, the cells in your body don't get all the oxygen they need. Hemoglobin levels are usually measured as part of a complete blood count (CBC) . A CBC is a group of tests that measure the number and type of cells in your blood. A hemoglobin test is not the same as a hemoglobin A1C test . The A1C test is used to check your average blood glucose (blood sugar). Why do I need a hemoglobin test? Your health care provider may order the test as part of a routine exam , or if you have: Symptoms of anemia, which include weakness, dizziness , and cold hands and feet A family history of thalassemia , sickle cell anemia , or other inherited blood disorder A diet low in iron and other minerals A long-term infection Excessive blood loss from an injury or surgical procedure You may also need this test to monitor the treatment of anemia or the other health conditions that could affect your hemoglobin level. What happens during a hemoglobin test? A health care professional will take a blood sample from a vein in your arm, using a small needle. After the needle is inserted, a small amount of blood will be collected into a test tube or vial. You may feel a little sting when the needle goes in or out. This usually takes less than five minutes. Will I need to do anything to prepare for the test? You don't need any special preparation for a hemoglobin test. If your provider has ordered other blood tests, you may need to fast (not eat or drink) for several hours before the test. Your provider will let you know if there are any special instructions. Are there any risks to the test? There is very little risk to having a blood test. You may have slight pain or bruising at the spot where the needle was put in, but most symptoms go away quickly. What do the results mean? Your results will compare your hemoglobin level to the normal range, which may be called the reference range. This range may vary, based on the laboratory used and your age, race, and sex. The test can't tell you what's causing an abnormal level. But knowing how high or low your hemoglobin level is can help your provider determine how severe your condition may be. Your hemoglobin levels may not be in the reference range for many reasons. Low hemoglobin levels may be a sign of: Different types of anemia Thalassemia Iron deficiency Liver disease Cancer and other diseases Blood loss from injury, a heavy menstrual period , or other problems Lack of certain nutrients, such as iron or vitamin B-12 High hemoglobin levels may be a sign of: Lung disease Heart disease Polycythemia vera, a disease which causes your bone marrow to make too many red blood cells Sleep apnea , a disorder that causes you to repeatedly stop breathing during sleep If any of your levels are abnormal, it doesn't always mean you have a medical condition that needs treatment. Living at a higher altitude can also cause a high hemoglobin level. Other factors that can affect your results can include: Diet Activity level Certain medicines Dehydration Smoking Certain genetic conditions Talk with your provider if you have questions about your results. To understand your hemoglobin results, your provider will also consider your symptoms, medical history, and the results of other blood tests. Learn more about laboratory tests, reference ranges, and understanding results . Is there anything else I need to know about a hemoglobin test? Some forms of anemia are mild, while other types of anemia can be serious and even life threatening if not treated. If you are diagnosed with anemia, talk to your provider about the best treatment plan for you. References Cleveland Clinic: Health Library: Diagnostics & Testing [Internet]. Cleveland (OH): Cleveland Clinic; c2024. Blood Tests; [reviewed 2022 Dec 06; cited 2024 Jul 24]; [about 16 screens]. Available from: https://my.clevelandclinic.org/health/diagnostics/24508-blood-tests Cleveland Clinic: Health Library: Diagnostics & Testing [Internet]. Cleveland (OH): Cleveland Clinic; c2024. Hemoglobin Test; [reviewed 2022 Jul 18; cited 2024 Jul 24]; [about 6 screens]. Available from: https://my.clevelandclinic.org/health/diagnostics/17790-hemoglobin-test Cleveland Clinic: Health Library: Symptoms [Internet]. Cleveland (OH): Cleveland Clinic; c2024. High Hemoglobin; [reviewed 2022 Jun 20; cited 2024 Jul 24]; [about 7 screens]. Available from: https://my.clevelandclinic.org/health/symptoms/17789-high-hemoglobin-count Cleveland Clinic: Health Library: Symptoms [Internet]. Cleveland (OH): Cleveland Clinic; c2024. Low Hemoglobin; [reviewed 2022 May 04; cited 2024 Jul 24]; [about 7 screens]. Available from: https://my.clevelandclinic.org/health/symptoms/17705-low-hemoglobin Familydoctor.org [Internet]. Leawood (KS): American Academy of Family Physicians; c2024; Anemia; [updated 2023 Sep; cited 2024 Jul 24]; [about 7 screens]. Available from: https://familydoctor.org/condition/anemia/ Freeman AM, Rai M, Morando DW. Anemia Screening. [Updated 2023 Jul 25; cited 2024 Jul 24]; [about 7 screens]. In: StatPearls [Internet]. Treasure Island (FL): StatPearls Publishing; 2024 Jan-. Available from: https://www.ncbi.nlm.nih.gov/books/NBK499905/ Mayo Clinic [Internet]. Mayo Foundation for Medical Education and Research; c1998-2024. Hemoglobin Test; [cited 2024 Jul 24]; [about 5 screens]. Available from: https://www.mayoclinic.org/tests-procedures/hemoglobin-test/about/pac-20385075 National Center for Advancing Translational Sciences/Genetic and Rare Diseases Information Center [Internet]. Gaithersburg (MD): U.S. Department of Health and Human Services; Polycythemia Vera; [2022 Jun; cited 2024 Jul 24]; [about 5 screens]. Available from: https://rarediseases.info.nih.gov/diseases/7422/polycythemia-vera National Heart, Lung, and Blood Institute [Internet]. Bethesda (MD): U.S. Department of Health and Human Services; Anemia; [updated 2022 Mar 24; cited 2024 Jul 24]; [about 2 screens]. Available from: https://www.nhlbi.nih.gov/health/anemia National Heart, Lung, and Blood Institute [Internet]. Bethesda (MD): U.S. Department of Health and Human Services; Anemia: Diagnosis; [updated 2022 Mar 24; cited 2024 Jul 24]; [about 3 screens]. Available from: https://www.nhlbi.nih.gov/health/anemia/diagnosis National Heart, Lung, and Blood Institute [Internet]. Bethesda (MD): U.S. Department of Health and Human Services; Anemia: Iron-Deficiency Anemia; [updated 2022 Mar 24; cited 2024 Jul 24]; [about 7 screens]. Available from: https://www.nhlbi.nih.gov/health/anemia/iron-deficiency-anemia Nemours KidsHealth [Internet]. Jacksonville (FL): The Nemours Foundation; c1995-2024. Blood Test: Hemoglobin [reviewed 2023 Aug; cited 2024 Jul 24]; [about 2 screens]. Available from: https://kidshealth.org/en/parents/blood-test-hemoglobin.html Nemours KidsHealth [Internet]. Jacksonville (FL): The Nemours Foundation; c1995-2024. Getting a Blood Test; [reviewed 2021 Sep; cited 2024 Jul 24]; [about 4 screens]. Available from: https://kidshealth.org/en/parents/blood-tests.html Testing.com [Internet]. Seattle (WA): OneCare Media; c2024. Hemoglobin Blood Test; [modified 2021 Nov 9; cited 2024 Jul 24]; [about 9 screens]. Available from: https://www.testing.com/tests/hemoglobin/ The information on this site should not be used as a substitute for professional medical care or advice. Contact a health care provider if you have questions about your health. Learn how to cite this page"
+      },
+      "normalized": {
+        "sourceId": "medlineplus-hemoglobin-test",
+        "organization": "MedlinePlus / National Library of Medicine",
+        "title": "Hemoglobin Test: MedlinePlus Medical Test",
+        "url": "https://medlineplus.gov/lab-tests/hemoglobin-test/",
+        "accessedAt": "2026-09-02",
+        "sections": [
+          {
+            "category": "reference_ranges",
+            "snippets": [
+              "Your results will compare your hemoglobin level to the normal range, which may be called the reference range. This range may vary, based on the laboratory used and your age, race, and sex. The test can't tell you what's causing an abnormal level. But knowing how high or low your hemoglobin level is can help your provider determine how severe your condition may be.",
+              "Your hemoglobin levels may not be in the reference range for many reasons.",
+              "Learn more about laboratory tests, reference ranges, and understanding results ."
+            ]
+          },
+          {
+            "category": "low_associations",
+            "snippets": [
+              "A hemoglobin test is a blood test often used to check for anemia , a condition in which your body does not make enough healthy red blood cells. If you have anemia, the cells in your body don't get all the oxygen they need. Hemoglobin levels are usually measured as part of a complete blood count (CBC) . A CBC is a group of tests that measure the number and type of cells in your blood.",
+              "Symptoms of anemia, which include weakness, dizziness , and cold hands and feet",
+              "A family history of thalassemia , sickle cell anemia , or other inherited blood disorder",
+              "Excessive blood loss from an injury or surgical procedure",
+              "You may also need this test to monitor the treatment of anemia or the other health conditions that could affect your hemoglobin level.",
+              "Low hemoglobin levels may be a sign of:",
+              "Different types of anemia",
+              "Blood loss from injury, a heavy menstrual period , or other problems",
+              "Some forms of anemia are mild, while other types of anemia can be serious and even life threatening if not treated. If you are diagnosed with anemia, talk to your provider about the best treatment plan for you.",
+              "Cleveland Clinic: Health Library: Symptoms [Internet]. Cleveland (OH): Cleveland Clinic; c2024. Low Hemoglobin; [reviewed 2022 May 04; cited 2024 Jul 24]; [about 7 screens]. Available from: https://my.clevelandclinic.org/health/symptoms/17705-low-hemoglobin",
+              "Familydoctor.org [Internet]. Leawood (KS): American Academy of Family Physicians; c2024; Anemia; [updated 2023 Sep; cited 2024 Jul 24]; [about 7 screens]. Available from: https://familydoctor.org/condition/anemia/",
+              "Freeman AM, Rai M, Morando DW. Anemia Screening. [Updated 2023 Jul 25; cited 2024 Jul 24]; [about 7 screens]. In: StatPearls [Internet]. Treasure Island (FL): StatPearls Publishing; 2024 Jan-. Available from: https://www.ncbi.nlm.nih.gov/books/NBK499905/",
+              "National Heart, Lung, and Blood Institute [Internet]. Bethesda (MD): U.S. Department of Health and Human Services; Anemia; [updated 2022 Mar 24; cited 2024 Jul 24]; [about 2 screens]. Available from: https://www.nhlbi.nih.gov/health/anemia",
+              "National Heart, Lung, and Blood Institute [Internet]. Bethesda (MD): U.S. Department of Health and Human Services; Anemia: Diagnosis; [updated 2022 Mar 24; cited 2024 Jul 24]; [about 3 screens]. Available from: https://www.nhlbi.nih.gov/health/anemia/diagnosis",
+              "National Heart, Lung, and Blood Institute [Internet]. Bethesda (MD): U.S. Department of Health and Human Services; Anemia: Iron-Deficiency Anemia; [updated 2022 Mar 24; cited 2024 Jul 24]; [about 7 screens]. Available from: https://www.nhlbi.nih.gov/health/anemia/iron-deficiency-anemia"
+            ]
+          },
+          {
+            "category": "high_associations",
+            "snippets": [
+              "High hemoglobin levels may be a sign of:",
+              "Polycythemia vera, a disease which causes your bone marrow to make too many red blood cells",
+              "If any of your levels are abnormal, it doesn't always mean you have a medical condition that needs treatment. Living at a higher altitude can also cause a high hemoglobin level. Other factors that can affect your results can include:",
+              "Cleveland Clinic: Health Library: Symptoms [Internet]. Cleveland (OH): Cleveland Clinic; c2024. High Hemoglobin; [reviewed 2022 Jun 20; cited 2024 Jul 24]; [about 7 screens]. Available from: https://my.clevelandclinic.org/health/symptoms/17789-high-hemoglobin-count",
+              "National Center for Advancing Translational Sciences/Genetic and Rare Diseases Information Center [Internet]. Gaithersburg (MD): U.S. Department of Health and Human Services; Polycythemia Vera; [2022 Jun; cited 2024 Jul 24]; [about 5 screens]. Available from: https://rarediseases.info.nih.gov/diseases/7422/polycythemia-vera"
+            ]
+          },
+          {
+            "category": "nutrition_lifestyle",
+            "snippets": [
+              "A hemoglobin test measures the levels of hemoglobin in your blood. Hemoglobin is an iron-rich protein in your red blood cells. It carries oxygen from your lungs to the rest of your body. Your cells need oxygen to grow, reproduce, and make energy for you to function. Your hemoglobin levels provide information about the health of your red blood cells. If your hemoglobin levels are abnormal, it may be a sign that you have a blood disorder .",
+              "A diet low in iron and other minerals"
+            ]
+          },
+          {
+            "category": "monitoring",
+            "snippets": [
+              "There is very little risk to having a blood test. You may have slight pain or bruising at the spot where the needle was put in, but most symptoms go away quickly.",
+              "Talk with your provider if you have questions about your results. To understand your hemoglobin results, your provider will also consider your symptoms, medical history, and the results of other blood tests."
+            ]
+          },
+          {
+            "category": "general",
+            "snippets": [
+              "Hemoglobin Test: MedlinePlus Medical Test Skip navigation Official websites use .gov A .gov website belongs to an official government organization in the United States.",
+              "Secure .gov websites use HTTPS A lock ( ) or https:// means you’ve safely connected to the .gov website. Share sensitive information only on official, secure websites.",
+              "Other names: Hb, Hgb, H&H",
+              "A hemoglobin test is not the same as a hemoglobin A1C test . The A1C test is used to check your average blood glucose (blood sugar).",
+              "Your health care provider may order the test as part of a routine exam , or if you have:"
+            ]
+          }
+        ]
+      },
+      "fetchStatus": "success"
+    },
+    {
+      "source": {
+        "id": "nhlbi-anemia-overview",
+        "organization": "National Heart, Lung, and Blood Institute (NHLBI) / NIH",
+        "title": "Anemia - Causes and Risk Factors | NHLBI, NIH",
+        "url": "https://www.nhlbi.nih.gov/health/anemia/causes",
+        "domain": "nhlbi.nih.gov",
+        "sourceType": "government",
+        "accessedAt": "2026-09-02",
+        "lastReviewedAt": "2026-09-02",
+        "description": "Physiological mechanisms, nutritional factors (iron, B12, folate), and systemic causes of low hemoglobin."
+      },
+      "extracted": {
+        "title": "Anemia - Causes and Risk Factors | NHLBI, NIH",
+        "headings": [
+          "Anemia Causes and Risk Factors",
+          "Language switcher",
+          "What causes anemia?",
+          "Can you prevent anemia?"
+        ],
+        "paragraphs": [
+          "Anemia - Causes and Risk Factors | NHLBI, NIH Skip to main content Anemia Home",
+          "Causes and Risk Factors",
+          "Treatment and Management",
+          "Anemia in Pregnancy",
+          "Types of Anemia Iron-Deficiency Anemia",
+          "Vitamin B12–Deficiency Anemia",
+          "Hemolytic Anemia",
+          "MORE INFORMATION",
+          "You may develop anemia if your body doesn’t make enough red blood cells or loses too many red blood cells. Red blood cells contain hemoglobin hemoglobin (HEE-moh-GLOH-bin): A protein in red blood cells that carries oxygen throughout the body. . Hemoglobin is an iron-rich protein that helps red blood cells carry oxygen from your lungs to the rest of your body. Many conditions can cause anemia. Mild anemia is a common condition that can develop in anyone. Serious anemia may be a sign of another health condition.",
+          "Some types of anemias are caused by factors you can’t change, like your family history or your age. Other anemias are caused by factors you can manage, like eating habits or other health conditions that control how your body makes red blood cells.",
+          "Age: As you age, your chances of developing anemia increase.",
+          "Blood loss: Any condition that causes you to lose a lot of blood increases your risk of anemia. While this can include blood lost during the menstrual cycle, anemia due to bleeding too much from your menstrual cycle is not normal. See your doctor if your periods are heavy (you need to change your tampon or pad after less than 2 hours or you pass clots the size of quarters or larger). Bleeding can also lead to anemia if you have other risk factors. These include bleeding due to inflammation in the stomach or bowels, or bleeding from surgery, a serious injury, or donating blood often.",
+          "Family history: If you have a family history of inherited inherited (in-HAYR-ih-ted): The passing of genetic information from a parent to a child through genes. types of anemia, you may have an increased risk.",
+          "Lifestyle habits: People who do not get nutrients like iron, vitamin B12, and folic acid to make healthy red blood cells have a higher risk of anemia. Drinking too much alcohol also raises your risk of anemia.",
+          "Other health conditions: Chronic (long-term) kidney disease, inflammation inflammation (IN-fluh-MAY-shun): A reaction to injury of the body. The signs of inflammation are swelling, redness, or pain. from an infection, cancer, or an autoimmune autoimmune (AW-toh-ih-MYOON): A term describing cells and antibodies that a person’s body makes to attack its own tissues, as happens in autoimmune diseases. disease can cause your body to make fewer red blood cells. Certain medicines or treatments such as chemotherapy for cancer can also raise your risk of anemia.",
+          "You can take steps to prevent some types of anemia. Your doctor may recommend eating more foods rich in iron or vitamin B12, such as leafy vegetables, meat, milk, and eggs. Your doctor may also talk to you about iron or vitamin B12 supplements. If you are a strict vegetarian or vegan, talk to your doctor about how to get all the nutrients you need in your diet.",
+          "Anemia that is caused by your genes cannot be prevented. If you plan to have children and have an inherited type of anemia, you can talk to a genetic counselor. A genetic counselor can answer questions about the risk and explain what choices are available."
+        ],
+        "cleanText": "Anemia - Causes and Risk Factors | NHLBI, NIH Skip to main content Anemia Home Health Topics Anemia Causes and Risk Factors 0 Anemia MENU Home Health Topics Anemia Causes and Risk Factors What Is Anemia? Symptoms Diagnosis Causes and Risk Factors Treatment and Management Anemia in Pregnancy Types of Anemia Iron-Deficiency Anemia Vitamin B12–Deficiency Anemia Hemolytic Anemia Aplastic Anemia MORE INFORMATION Participate in a Study Fact Sheets and Handouts Research Anemia Anemia Causes and Risk Factors Language switcher English Español You may develop anemia if your body doesn’t make enough red blood cells or loses too many red blood cells. Red blood cells contain hemoglobin hemoglobin (HEE-moh-GLOH-bin): A protein in red blood cells that carries oxygen throughout the body. . Hemoglobin is an iron-rich protein that helps red blood cells carry oxygen from your lungs to the rest of your body. Many conditions can cause anemia. Mild anemia is a common condition that can develop in anyone. Serious anemia may be a sign of another health condition. What causes anemia? Some types of anemias are caused by factors you can’t change, like your family history or your age. Other anemias are caused by factors you can manage, like eating habits or other health conditions that control how your body makes red blood cells. Age: As you age, your chances of developing anemia increase. Blood loss: Any condition that causes you to lose a lot of blood increases your risk of anemia. While this can include blood lost during the menstrual cycle, anemia due to bleeding too much from your menstrual cycle is not normal. See your doctor if your periods are heavy (you need to change your tampon or pad after less than 2 hours or you pass clots the size of quarters or larger). Bleeding can also lead to anemia if you have other risk factors. These include bleeding due to inflammation in the stomach or bowels, or bleeding from surgery, a serious injury, or donating blood often. Family history: If you have a family history of inherited inherited (in-HAYR-ih-ted): The passing of genetic information from a parent to a child through genes. types of anemia, you may have an increased risk. Lifestyle habits: People who do not get nutrients like iron, vitamin B12, and folic acid to make healthy red blood cells have a higher risk of anemia. Drinking too much alcohol also raises your risk of anemia. Other health conditions: Chronic (long-term) kidney disease, inflammation inflammation (IN-fluh-MAY-shun): A reaction to injury of the body. The signs of inflammation are swelling, redness, or pain. from an infection, cancer, or an autoimmune autoimmune (AW-toh-ih-MYOON): A term describing cells and antibodies that a person’s body makes to attack its own tissues, as happens in autoimmune diseases. disease can cause your body to make fewer red blood cells. Certain medicines or treatments such as chemotherapy for cancer can also raise your risk of anemia. Can you prevent anemia? You can take steps to prevent some types of anemia. Your doctor may recommend eating more foods rich in iron or vitamin B12, such as leafy vegetables, meat, milk, and eggs. Your doctor may also talk to you about iron or vitamin B12 supplements. If you are a strict vegetarian or vegan, talk to your doctor about how to get all the nutrients you need in your diet. Anemia that is caused by your genes cannot be prevented. If you plan to have children and have an inherited type of anemia, you can talk to a genetic counselor. A genetic counselor can answer questions about the risk and explain what choices are available. Last updated on December 18, 2025"
+      },
+      "normalized": {
+        "sourceId": "nhlbi-anemia-overview",
+        "organization": "National Heart, Lung, and Blood Institute (NHLBI) / NIH",
+        "title": "Anemia - Causes and Risk Factors | NHLBI, NIH",
+        "url": "https://www.nhlbi.nih.gov/health/anemia/causes",
+        "accessedAt": "2026-09-02",
+        "sections": [
+          {
+            "category": "low_associations",
+            "snippets": [
+              "Anemia - Causes and Risk Factors | NHLBI, NIH Skip to main content Anemia Home",
+              "Anemia in Pregnancy",
+              "Types of Anemia Iron-Deficiency Anemia",
+              "Vitamin B12–Deficiency Anemia",
+              "Hemolytic Anemia",
+              "You may develop anemia if your body doesn’t make enough red blood cells or loses too many red blood cells. Red blood cells contain hemoglobin hemoglobin (HEE-moh-GLOH-bin): A protein in red blood cells that carries oxygen throughout the body. . Hemoglobin is an iron-rich protein that helps red blood cells carry oxygen from your lungs to the rest of your body. Many conditions can cause anemia. Mild anemia is a common condition that can develop in anyone. Serious anemia may be a sign of another health condition.",
+              "Some types of anemias are caused by factors you can’t change, like your family history or your age. Other anemias are caused by factors you can manage, like eating habits or other health conditions that control how your body makes red blood cells.",
+              "Age: As you age, your chances of developing anemia increase.",
+              "Blood loss: Any condition that causes you to lose a lot of blood increases your risk of anemia. While this can include blood lost during the menstrual cycle, anemia due to bleeding too much from your menstrual cycle is not normal. See your doctor if your periods are heavy (you need to change your tampon or pad after less than 2 hours or you pass clots the size of quarters or larger). Bleeding can also lead to anemia if you have other risk factors. These include bleeding due to inflammation in the stomach or bowels, or bleeding from surgery, a serious injury, or donating blood often.",
+              "Family history: If you have a family history of inherited inherited (in-HAYR-ih-ted): The passing of genetic information from a parent to a child through genes. types of anemia, you may have an increased risk.",
+              "Lifestyle habits: People who do not get nutrients like iron, vitamin B12, and folic acid to make healthy red blood cells have a higher risk of anemia. Drinking too much alcohol also raises your risk of anemia.",
+              "Other health conditions: Chronic (long-term) kidney disease, inflammation inflammation (IN-fluh-MAY-shun): A reaction to injury of the body. The signs of inflammation are swelling, redness, or pain. from an infection, cancer, or an autoimmune autoimmune (AW-toh-ih-MYOON): A term describing cells and antibodies that a person’s body makes to attack its own tissues, as happens in autoimmune diseases. disease can cause your body to make fewer red blood cells. Certain medicines or treatments such as chemotherapy for cancer can also raise your risk of anemia.",
+              "You can take steps to prevent some types of anemia. Your doctor may recommend eating more foods rich in iron or vitamin B12, such as leafy vegetables, meat, milk, and eggs. Your doctor may also talk to you about iron or vitamin B12 supplements. If you are a strict vegetarian or vegan, talk to your doctor about how to get all the nutrients you need in your diet.",
+              "Anemia that is caused by your genes cannot be prevented. If you plan to have children and have an inherited type of anemia, you can talk to a genetic counselor. A genetic counselor can answer questions about the risk and explain what choices are available."
+            ]
+          },
+          {
+            "category": "general",
+            "snippets": [
+              "Causes and Risk Factors",
+              "Treatment and Management",
+              "MORE INFORMATION"
+            ]
+          }
+        ]
+      },
+      "fetchStatus": "success"
+    },
+    {
+      "source": {
+        "id": "medlineplus-anemia",
+        "organization": "MedlinePlus / National Library of Medicine",
+        "title": "Anemia | MedlinePlus",
+        "url": "https://medlineplus.gov/anemia.html",
+        "domain": "medlineplus.gov",
+        "sourceType": "government",
+        "accessedAt": "2026-09-02",
+        "lastReviewedAt": "2026-09-02",
+        "description": "Health information on symptoms, monitoring, and lifestyle guidance related to low hemoglobin."
+      },
+      "extracted": {
+        "title": "Anemia | MedlinePlus",
+        "headings": [
+          "Anemia",
+          "Basics",
+          "Learn More",
+          "See, Play and Learn",
+          "Research",
+          "Resources",
+          "For You",
+          "Summary",
+          "Start Here",
+          "Symptoms",
+          "Diagnosis and Tests",
+          "Prevention and Risk Factors",
+          "Treatments and Therapies",
+          "Related Issues",
+          "Specifics",
+          "Genetics",
+          "Statistics and Research",
+          "Clinical Trials",
+          "Journal Articles References and abstracts from MEDLINE/PubMed (National Library of Medicine)",
+          "Find an Expert",
+          "Children",
+          "Women",
+          "Older Adults",
+          "Patient Handouts"
+        ],
+        "paragraphs": [
+          "Anemia | MedlinePlus Skip navigation Official websites use .gov A .gov website belongs to an official government organization in the United States.",
+          "Secure .gov websites use HTTPS A lock ( ) or https:// means you’ve safely connected to the .gov website. Share sensitive information only on official, secure websites.",
+          "Diagnosis and Tests",
+          "Prevention and Risk Factors",
+          "Treatments and Therapies",
+          "No links available",
+          "Statistics and Research",
+          "Journal Articles",
+          "Patient Handouts",
+          "If you have anemia, your blood does not carry enough oxygen to the rest of your body. The most common cause of anemia is not having enough iron . Your body needs iron to make hemoglobin. Hemoglobin is an iron-rich protein that gives the red color to blood. It carries oxygen from the lungs to the rest of the body.",
+          "Anemia has three main causes: blood loss, lack of red blood cell production, and high rates of red blood cell destruction.",
+          "Conditions that may lead to anemia include:",
+          "Colon polyps or colon cancer",
+          "Inherited disorders",
+          "A diet that does not have enough iron, folic acid or vitamin B12",
+          "Blood disorders such as sickle cell anemia and thalassemia , or cancer",
+          "Aplastic anemia , a condition that can be inherited or acquired",
+          "G6PD deficiency , a metabolic disorder",
+          "Anemia can make you feel tired, cold, dizzy, and irritable. You may be short of breath or have a headache.",
+          "Your doctor will diagnose anemia with a physical exam and blood tests. Treatment depends on the kind of anemia you have.",
+          "NIH: National Heart, Lung, and Blood Institute",
+          "Anemia (American Academy of Family Physicians)",
+          "What Is Anemia? (National Heart, Lung, and Blood Institute) Also in Spanish",
+          "Your Guide to Anemia (National Heart, Lung, and Blood Institute) - PDF",
+          "Anemia Symptoms (National Heart, Lung, and Blood Institute) Also in Spanish",
+          "Anemia Diagnosis (National Heart, Lung, and Blood Institute) Also in Spanish",
+          "Blood Smear (National Library of Medicine) Also in Spanish",
+          "Blood Tests (National Heart, Lung, and Blood Institute) Also in Spanish",
+          "Bone Marrow Tests (National Library of Medicine) Also in Spanish",
+          "Complete Blood Count (CBC) (National Library of Medicine) Also in Spanish",
+          "Ferritin Blood Test (National Library of Medicine) Also in Spanish",
+          "Haptoglobin (HP) Test (National Library of Medicine) Also in Spanish",
+          "Hemoglobin Electrophoresis (National Library of Medicine) Also in Spanish",
+          "Iron Tests (National Library of Medicine) Also in Spanish",
+          "Lactate Dehydrogenase (LDH) Isoenzymes Test (National Library of Medicine) Also in Spanish",
+          "Lactate Dehydrogenase (LDH) Test (National Library of Medicine) Also in Spanish",
+          "Red Blood Cell (RBC) Indices (National Library of Medicine) Also in Spanish",
+          "Reticulocyte Count (National Library of Medicine) Also in Spanish",
+          "Vitamin B Test (National Library of Medicine) Also in Spanish",
+          "Anemia Causes and Risk Factors (National Heart, Lung, and Blood Institute) Also in Spanish",
+          "Anemia Treatment and Management (National Heart, Lung, and Blood Institute) Also in Spanish",
+          "Iron (National Institutes of Health, Office of Dietary Supplements) Also in Spanish",
+          "Treatments for Blood Disorders (National Heart, Lung, and Blood Institute) Also in Spanish",
+          "Vitamin B12 (National Institutes of Health, Office of Dietary Supplements) Also in Spanish",
+          "Anemia in Chronic Kidney Disease (National Institute of Diabetes and Digestive and Kidney Diseases) Also in Spanish",
+          "Craving and Chewing Ice: A Sign of Anemia? (Mayo Foundation for Medical Education and Research) Also in Spanish",
+          "Managing Anemia When You Have Cancer (American Cancer Society) Also in Spanish",
+          "Anemia Due to Excessive Bleeding (Merck & Co., Inc.) Also in Spanish",
+          "Anemia of Inflammation or Chronic Disease (National Institute of Diabetes and Digestive and Kidney Diseases) Also in Spanish",
+          "Hemoglobin C, S-C, and E Diseases (Merck & Co., Inc.) Also in Spanish",
+          "Hemolytic Anemia (National Heart, Lung, and Blood Institute) Also in Spanish",
+          "Iron-Deficiency Anemia (National Heart, Lung, and Blood Institute) Also in Spanish",
+          "Paroxysmal Nocturnal Hemoglobinuria (PNH) (Aplastic Anemia and MDS International Foundation)",
+          "Vitamin B12-Deficiency Anemia (National Heart, Lung, and Blood Institute) Also in Spanish",
+          "Vitamin Deficiency Anemia (Mayo Foundation for Medical Education and Research) Also in Spanish",
+          "Congenital dyserythropoietic anemia: MedlinePlus Genetics (National Library of Medicine)",
+          "Diamond-Blackfan anemia: MedlinePlus Genetics (National Library of Medicine)",
+          "Ghosal hematodiaphyseal dysplasia: MedlinePlus Genetics (National Library of Medicine)",
+          "Glucose phosphate isomerase deficiency: MedlinePlus Genetics (National Library of Medicine)",
+          "Hereditary folate malabsorption: MedlinePlus Genetics (National Library of Medicine)",
+          "Hereditary spherocytosis: MedlinePlus Genetics (National Library of Medicine)",
+          "Hypochromic microcytic anemia with iron overload: MedlinePlus Genetics (National Library of Medicine)",
+          "Imerslund-Gräsbeck syndrome: MedlinePlus Genetics (National Library of Medicine)",
+          "Iron-refractory iron deficiency anemia: MedlinePlus Genetics (National Library of Medicine)",
+          "Majeed syndrome: MedlinePlus Genetics (National Library of Medicine)",
+          "Mucolipidosis type IV: MedlinePlus Genetics (National Library of Medicine)",
+          "Paroxysmal nocturnal hemoglobinuria: MedlinePlus Genetics (National Library of Medicine)",
+          "Phosphoglycerate kinase deficiency: MedlinePlus Genetics (National Library of Medicine)",
+          "Pyruvate kinase deficiency: MedlinePlus Genetics (National Library of Medicine)",
+          "Thiamine-responsive megaloblastic anemia syndrome: MedlinePlus Genetics (National Library of Medicine)",
+          "TRNT1 deficiency: MedlinePlus Genetics (National Library of Medicine)",
+          "X-linked sideroblastic anemia: MedlinePlus Genetics (National Library of Medicine)",
+          "Anemia Prevalence: United States, August 2021-August 2023 (Centers for Disease Control and Prevention)",
+          "FastStats: Anemia or Iron Deficiency (National Center for Health Statistics)",
+          "ClinicalTrials.gov: Anemia (National Institutes of Health)",
+          "ClinicalTrials.gov: Anemia, Iron-Deficiency (National Institutes of Health)",
+          "Article: Intravenous iron to treat anaemia before cardiac surgery (ITACS): international, double...",
+          "Article: Restrictive vs Liberal Transfusion Strategy After Myocardial Infarction: A Post Hoc...",
+          "Article: Application of high-flux hemodialysis combined with hypoxia-inducible factor prolyl hydroxylase inhibitor...",
+          "Anemia -- see more articles",
+          "National Heart, Lung, and Blood Institute",
+          "National Institute of Diabetes and Digestive and Kidney Diseases",
+          "Anemia (For Parents) (Nemours Foundation)",
+          "Anemia in the Newborn (Merck & Co., Inc.) Also in Spanish",
+          "Diamond-Blackfan Anemia (For Parents) (Nemours Foundation) Also in Spanish",
+          "Hereditary Spherocytosis (Nemours Foundation) Also in Spanish",
+          "Iron-Deficiency Anemia (Nemours Foundation) Also in Spanish",
+          "Pyruvate Kinase Deficiency (For Parents) (Nemours Foundation) Also in Spanish",
+          "Anemia and Pregnancy (American Society of Hematology)",
+          "Iron-Deficiency Anemia (Department of Health and Human Services, Office on Women&#x27;s Health) Also in Spanish",
+          "Anemia (AGS Health in Aging Foundation)",
+          "Anemia (Medical Encyclopedia) Also in Spanish",
+          "Anemia caused by low iron - infants and toddlers (Medical Encyclopedia) Also in Spanish",
+          "Anemia of chronic disease (Medical Encyclopedia) Also in Spanish",
+          "Febrile (warm) and cold agglutinins (Medical Encyclopedia) Also in Spanish",
+          "Ferritin blood test (Medical Encyclopedia) Also in Spanish",
+          "Hemolytic anemia (Medical Encyclopedia) Also in Spanish",
+          "Iron deficiency anemia (Medical Encyclopedia) Also in Spanish",
+          "Pernicious anemia (Medical Encyclopedia) Also in Spanish",
+          "Vitamin B12 deficiency anemia (Medical Encyclopedia) Also in Spanish",
+          "Vitamin B12 level (Medical Encyclopedia) Also in Spanish",
+          "The information on this site should not be used as a substitute for professional medical care or advice. Contact a health care provider if you have questions about your health."
+        ],
+        "cleanText": "Anemia | MedlinePlus Skip navigation Official websites use .gov A .gov website belongs to an official government organization in the United States. Secure .gov websites use HTTPS A lock ( ) or https:// means you’ve safely connected to the .gov website. Share sensitive information only on official, secure websites. You Are Here: Home &rarr; Health Topics &rarr; Anemia URL of this page: https://medlineplus.gov/anemia.html Anemia Also called: Iron poor blood On this page Basics Summary Start Here Symptoms Diagnosis and Tests Prevention and Risk Factors Treatments and Therapies Learn More Related Issues Specifics Genetics See, Play and Learn No links available Research Statistics and Research Clinical Trials Journal Articles Resources Find an Expert For You Children Women Older Adults Patient Handouts Summary If you have anemia, your blood does not carry enough oxygen to the rest of your body. The most common cause of anemia is not having enough iron . Your body needs iron to make hemoglobin. Hemoglobin is an iron-rich protein that gives the red color to blood. It carries oxygen from the lungs to the rest of the body. Anemia has three main causes: blood loss, lack of red blood cell production, and high rates of red blood cell destruction. Conditions that may lead to anemia include: Heavy periods Pregnancy Ulcers Colon polyps or colon cancer Inherited disorders A diet that does not have enough iron, folic acid or vitamin B12 Blood disorders such as sickle cell anemia and thalassemia , or cancer Aplastic anemia , a condition that can be inherited or acquired G6PD deficiency , a metabolic disorder Anemia can make you feel tired, cold, dizzy, and irritable. You may be short of breath or have a headache. Your doctor will diagnose anemia with a physical exam and blood tests. Treatment depends on the kind of anemia you have. NIH: National Heart, Lung, and Blood Institute Start Here Anemia (American Academy of Family Physicians) What Is Anemia? (National Heart, Lung, and Blood Institute) Also in Spanish Your Guide to Anemia (National Heart, Lung, and Blood Institute) - PDF Symptoms Anemia Symptoms (National Heart, Lung, and Blood Institute) Also in Spanish Diagnosis and Tests Anemia Diagnosis (National Heart, Lung, and Blood Institute) Also in Spanish Blood Smear (National Library of Medicine) Also in Spanish Blood Tests (National Heart, Lung, and Blood Institute) Also in Spanish Bone Marrow Tests (National Library of Medicine) Also in Spanish Complete Blood Count (CBC) (National Library of Medicine) Also in Spanish Ferritin Blood Test (National Library of Medicine) Also in Spanish Haptoglobin (HP) Test (National Library of Medicine) Also in Spanish Hemoglobin Electrophoresis (National Library of Medicine) Also in Spanish Iron Tests (National Library of Medicine) Also in Spanish Lactate Dehydrogenase (LDH) Isoenzymes Test (National Library of Medicine) Also in Spanish Lactate Dehydrogenase (LDH) Test (National Library of Medicine) Also in Spanish Red Blood Cell (RBC) Indices (National Library of Medicine) Also in Spanish Reticulocyte Count (National Library of Medicine) Also in Spanish Vitamin B Test (National Library of Medicine) Also in Spanish Prevention and Risk Factors Anemia Causes and Risk Factors (National Heart, Lung, and Blood Institute) Also in Spanish Treatments and Therapies Anemia Treatment and Management (National Heart, Lung, and Blood Institute) Also in Spanish Iron (National Institutes of Health, Office of Dietary Supplements) Also in Spanish Treatments for Blood Disorders (National Heart, Lung, and Blood Institute) Also in Spanish Vitamin B12 (National Institutes of Health, Office of Dietary Supplements) Also in Spanish Related Issues Anemia in Chronic Kidney Disease (National Institute of Diabetes and Digestive and Kidney Diseases) Also in Spanish Craving and Chewing Ice: A Sign of Anemia? (Mayo Foundation for Medical Education and Research) Also in Spanish Managing Anemia When You Have Cancer (American Cancer Society) Also in Spanish Specifics Anemia Due to Excessive Bleeding (Merck & Co., Inc.) Also in Spanish Anemia of Inflammation or Chronic Disease (National Institute of Diabetes and Digestive and Kidney Diseases) Also in Spanish Hemoglobin C, S-C, and E Diseases (Merck & Co., Inc.) Also in Spanish Hemolytic Anemia (National Heart, Lung, and Blood Institute) Also in Spanish Iron-Deficiency Anemia (National Heart, Lung, and Blood Institute) Also in Spanish Paroxysmal Nocturnal Hemoglobinuria (PNH) (Aplastic Anemia and MDS International Foundation) Vitamin B12-Deficiency Anemia (National Heart, Lung, and Blood Institute) Also in Spanish Vitamin Deficiency Anemia (Mayo Foundation for Medical Education and Research) Also in Spanish Genetics Congenital dyserythropoietic anemia: MedlinePlus Genetics (National Library of Medicine) Diamond-Blackfan anemia: MedlinePlus Genetics (National Library of Medicine) Ghosal hematodiaphyseal dysplasia: MedlinePlus Genetics (National Library of Medicine) Glucose phosphate isomerase deficiency: MedlinePlus Genetics (National Library of Medicine) Hereditary folate malabsorption: MedlinePlus Genetics (National Library of Medicine) Hereditary spherocytosis: MedlinePlus Genetics (National Library of Medicine) Hypochromic microcytic anemia with iron overload: MedlinePlus Genetics (National Library of Medicine) Imerslund-Gräsbeck syndrome: MedlinePlus Genetics (National Library of Medicine) Iron-refractory iron deficiency anemia: MedlinePlus Genetics (National Library of Medicine) Majeed syndrome: MedlinePlus Genetics (National Library of Medicine) Mucolipidosis type IV: MedlinePlus Genetics (National Library of Medicine) Paroxysmal nocturnal hemoglobinuria: MedlinePlus Genetics (National Library of Medicine) Phosphoglycerate kinase deficiency: MedlinePlus Genetics (National Library of Medicine) Pyruvate kinase deficiency: MedlinePlus Genetics (National Library of Medicine) Thiamine-responsive megaloblastic anemia syndrome: MedlinePlus Genetics (National Library of Medicine) TRNT1 deficiency: MedlinePlus Genetics (National Library of Medicine) X-linked sideroblastic anemia: MedlinePlus Genetics (National Library of Medicine) Statistics and Research Anemia Prevalence: United States, August 2021-August 2023 (Centers for Disease Control and Prevention) FastStats: Anemia or Iron Deficiency (National Center for Health Statistics) Clinical Trials ClinicalTrials.gov: Anemia (National Institutes of Health) ClinicalTrials.gov: Anemia, Iron-Deficiency (National Institutes of Health) Journal Articles References and abstracts from MEDLINE/PubMed (National Library of Medicine) Article: Intravenous iron to treat anaemia before cardiac surgery (ITACS): international, double... Article: Restrictive vs Liberal Transfusion Strategy After Myocardial Infarction: A Post Hoc... Article: Application of high-flux hemodialysis combined with hypoxia-inducible factor prolyl hydroxylase inhibitor... Anemia -- see more articles Find an Expert National Heart, Lung, and Blood Institute National Institute of Diabetes and Digestive and Kidney Diseases Children Anemia (For Parents) (Nemours Foundation) Anemia in the Newborn (Merck & Co., Inc.) Also in Spanish Diamond-Blackfan Anemia (For Parents) (Nemours Foundation) Also in Spanish Hereditary Spherocytosis (Nemours Foundation) Also in Spanish Iron-Deficiency Anemia (Nemours Foundation) Also in Spanish Pyruvate Kinase Deficiency (For Parents) (Nemours Foundation) Also in Spanish Women Anemia and Pregnancy (American Society of Hematology) Iron-Deficiency Anemia (Department of Health and Human Services, Office on Women&#x27;s Health) Also in Spanish Older Adults Anemia (AGS Health in Aging Foundation) Patient Handouts Anemia (Medical Encyclopedia) Also in Spanish Anemia caused by low iron - infants and toddlers (Medical Encyclopedia) Also in Spanish Anemia of chronic disease (Medical Encyclopedia) Also in Spanish Febrile (warm) and cold agglutinins (Medical Encyclopedia) Also in Spanish Ferritin blood test (Medical Encyclopedia) Also in Spanish Hemolytic anemia (Medical Encyclopedia) Also in Spanish Iron deficiency anemia (Medical Encyclopedia) Also in Spanish Pernicious anemia (Medical Encyclopedia) Also in Spanish Vitamin B12 deficiency anemia (Medical Encyclopedia) Also in Spanish Vitamin B12 level (Medical Encyclopedia) Also in Spanish The information on this site should not be used as a substitute for professional medical care or advice. Contact a health care provider if you have questions about your health. Learn how to cite this page"
+      },
+      "normalized": {
+        "sourceId": "medlineplus-anemia",
+        "organization": "MedlinePlus / National Library of Medicine",
+        "title": "Anemia | MedlinePlus",
+        "url": "https://medlineplus.gov/anemia.html",
+        "accessedAt": "2026-09-02",
+        "sections": [
+          {
+            "category": "low_associations",
+            "snippets": [
+              "Anemia | MedlinePlus Skip navigation Official websites use .gov A .gov website belongs to an official government organization in the United States.",
+              "If you have anemia, your blood does not carry enough oxygen to the rest of your body. The most common cause of anemia is not having enough iron . Your body needs iron to make hemoglobin. Hemoglobin is an iron-rich protein that gives the red color to blood. It carries oxygen from the lungs to the rest of the body.",
+              "Anemia has three main causes: blood loss, lack of red blood cell production, and high rates of red blood cell destruction.",
+              "Conditions that may lead to anemia include:",
+              "Blood disorders such as sickle cell anemia and thalassemia , or cancer",
+              "Aplastic anemia , a condition that can be inherited or acquired",
+              "Anemia can make you feel tired, cold, dizzy, and irritable. You may be short of breath or have a headache.",
+              "Your doctor will diagnose anemia with a physical exam and blood tests. Treatment depends on the kind of anemia you have.",
+              "Anemia (American Academy of Family Physicians)",
+              "What Is Anemia? (National Heart, Lung, and Blood Institute) Also in Spanish",
+              "Your Guide to Anemia (National Heart, Lung, and Blood Institute) - PDF",
+              "Anemia Symptoms (National Heart, Lung, and Blood Institute) Also in Spanish",
+              "Anemia Diagnosis (National Heart, Lung, and Blood Institute) Also in Spanish",
+              "Anemia Causes and Risk Factors (National Heart, Lung, and Blood Institute) Also in Spanish",
+              "Anemia Treatment and Management (National Heart, Lung, and Blood Institute) Also in Spanish",
+              "Anemia in Chronic Kidney Disease (National Institute of Diabetes and Digestive and Kidney Diseases) Also in Spanish",
+              "Craving and Chewing Ice: A Sign of Anemia? (Mayo Foundation for Medical Education and Research) Also in Spanish",
+              "Managing Anemia When You Have Cancer (American Cancer Society) Also in Spanish",
+              "Anemia Due to Excessive Bleeding (Merck & Co., Inc.) Also in Spanish",
+              "Anemia of Inflammation or Chronic Disease (National Institute of Diabetes and Digestive and Kidney Diseases) Also in Spanish",
+              "Hemolytic Anemia (National Heart, Lung, and Blood Institute) Also in Spanish",
+              "Iron-Deficiency Anemia (National Heart, Lung, and Blood Institute) Also in Spanish",
+              "Paroxysmal Nocturnal Hemoglobinuria (PNH) (Aplastic Anemia and MDS International Foundation)",
+              "Vitamin B12-Deficiency Anemia (National Heart, Lung, and Blood Institute) Also in Spanish",
+              "Vitamin Deficiency Anemia (Mayo Foundation for Medical Education and Research) Also in Spanish",
+              "Congenital dyserythropoietic anemia: MedlinePlus Genetics (National Library of Medicine)",
+              "Diamond-Blackfan anemia: MedlinePlus Genetics (National Library of Medicine)",
+              "Hypochromic microcytic anemia with iron overload: MedlinePlus Genetics (National Library of Medicine)",
+              "Iron-refractory iron deficiency anemia: MedlinePlus Genetics (National Library of Medicine)",
+              "Thiamine-responsive megaloblastic anemia syndrome: MedlinePlus Genetics (National Library of Medicine)",
+              "X-linked sideroblastic anemia: MedlinePlus Genetics (National Library of Medicine)",
+              "Anemia Prevalence: United States, August 2021-August 2023 (Centers for Disease Control and Prevention)",
+              "FastStats: Anemia or Iron Deficiency (National Center for Health Statistics)",
+              "ClinicalTrials.gov: Anemia (National Institutes of Health)",
+              "ClinicalTrials.gov: Anemia, Iron-Deficiency (National Institutes of Health)",
+              "Anemia -- see more articles",
+              "Anemia (For Parents) (Nemours Foundation)",
+              "Anemia in the Newborn (Merck & Co., Inc.) Also in Spanish",
+              "Diamond-Blackfan Anemia (For Parents) (Nemours Foundation) Also in Spanish",
+              "Iron-Deficiency Anemia (Nemours Foundation) Also in Spanish",
+              "Anemia and Pregnancy (American Society of Hematology)",
+              "Iron-Deficiency Anemia (Department of Health and Human Services, Office on Women&#x27;s Health) Also in Spanish",
+              "Anemia (AGS Health in Aging Foundation)",
+              "Anemia (Medical Encyclopedia) Also in Spanish",
+              "Anemia caused by low iron - infants and toddlers (Medical Encyclopedia) Also in Spanish",
+              "Anemia of chronic disease (Medical Encyclopedia) Also in Spanish",
+              "Hemolytic anemia (Medical Encyclopedia) Also in Spanish",
+              "Iron deficiency anemia (Medical Encyclopedia) Also in Spanish",
+              "Pernicious anemia (Medical Encyclopedia) Also in Spanish",
+              "Vitamin B12 deficiency anemia (Medical Encyclopedia) Also in Spanish"
+            ]
+          },
+          {
+            "category": "nutrition_lifestyle",
+            "snippets": [
+              "A diet that does not have enough iron, folic acid or vitamin B12",
+              "Iron (National Institutes of Health, Office of Dietary Supplements) Also in Spanish",
+              "Vitamin B12 (National Institutes of Health, Office of Dietary Supplements) Also in Spanish",
+              "Hereditary folate malabsorption: MedlinePlus Genetics (National Library of Medicine)",
+              "Vitamin B12 level (Medical Encyclopedia) Also in Spanish"
+            ]
+          },
+          {
+            "category": "general",
+            "snippets": [
+              "Secure .gov websites use HTTPS A lock ( ) or https:// means you’ve safely connected to the .gov website. Share sensitive information only on official, secure websites.",
+              "Diagnosis and Tests",
+              "Prevention and Risk Factors",
+              "Treatments and Therapies",
+              "No links available"
+            ]
+          }
+        ]
+      },
+      "fetchStatus": "success"
+    },
+    {
+      "source": {
+        "id": "nhlbi-blood-tests",
+        "organization": "National Heart, Lung, and Blood Institute (NHLBI) / NIH",
+        "title": "Blood Tests - Complete Blood Count | NHLBI, NIH",
+        "url": "https://www.nhlbi.nih.gov/health/blood-tests",
+        "domain": "nhlbi.nih.gov",
+        "sourceType": "government",
+        "accessedAt": "2026-09-02",
+        "lastReviewedAt": "2026-09-02",
+        "description": "Comprehensive guide to Complete Blood Count (CBC) testing and component evaluation."
+      },
+      "extracted": {
+        "title": "Blood Tests - Blood Tests | NHLBI, NIH",
+        "headings": [
+          "Blood Tests Blood Tests",
+          "Language switcher",
+          "Types of blood tests",
+          "Complete blood count (CBC)",
+          "Blood chemistry tests/basic metabolic panel",
+          "Blood enzyme tests",
+          "Lipoprotein panel",
+          "Blood clotting tests",
+          "Bone marrow tests"
+        ],
+        "paragraphs": [
+          "Blood Tests - Blood Tests | NHLBI, NIH Skip to main content Blood Tests Home",
+          "Blood tests are very common. They help doctors check for certain diseases and conditions. They also help check the function of your organs and show how well treatments are working.",
+          "The complete blood count (CBC) is one of the most common blood tests. It is often done as part of a routine checkup. This test measures many different parts of your blood, including red blood cells, white blood cells, and platelets.",
+          "Red blood cell levels that are higher or lower than normal could be a sign of dehydration, anemia, or bleeding. Red blood cells carry oxygen from your lungs to the rest of your body.",
+          "White blood cell levels that are higher or lower than normal could be a sign of infection, blood cancer, or an immune system disorder. White blood cells are part of your immune system, which fights infections and diseases.",
+          "Platelet levels that are higher or lower than normal may be a sign of a clotting disorder or a bleeding disorder. Platelets are blood cell fragments that help your blood clot. They stick together to seal cuts or breaks on blood vessel walls and stop bleeding.",
+          "Hemoglobin levels that are lower than normal may be a sign of anemia, sickle cell disease, or thalassemia. Hemoglobin is an iron-rich protein in red blood cells that carries oxygen.",
+          "Hematocrit levels that are too high might mean you’re dehydrated. Low hematocrit levels may be a sign of anemia. Hematocrit is a measure of how much space red blood cells take up in your blood.",
+          "Mean corpuscular volume (MCV) levels that are lower than normal may be a sign of anemia or thalassemia. MCV is a measure of the average size of your red blood cells.",
+          "The table below shows some normal adult ranges for different parts of the CBC test. Some of the normal ranges differ between men and women. Other factors, such as age, high altitude, and race, also may affect normal ranges.",
+          "Your healthcare provider should discuss your results with you. They will advise you further if your results are outside the normal range for your group.",
+          "* Cells/mcL = cells per microliter; gm/dL = grams per deciliter. † A femtoliter is a measure of volume.",
+          "Used for: Anemia",
+          "Bleeding Disorders",
+          "Blood Cholesterol",
+          "Blood Clotting Disorders",
+          "Sickle Cell Disease",
+          "The basic metabolic panel (BMP) is a group of tests that measures different naturally occurring chemicals in the blood. These tests usually are done on the fluid (plasma) part of blood. The tests can give providers information about your organs, such as the heart, kidneys, and liver.",
+          "The BMP includes blood glucose, calcium, and electrolyte tests, as well as blood tests that measure kidney function. Some of these tests require you to fast (not eat any food) before the test, and others don't. Your provider will tell you how to prepare for the test(s) you're having.",
+          "Used for: Heart Failure",
+          "High Blood Pressure",
+          "Blood enzyme tests may be used to check for heart attack. Enzymes are chemicals that help control chemical reactions in your body. There are many types of blood enzyme tests. The ones for heart attack include troponin and creatine kinase (CK) tests.",
+          "Blood levels of troponin go up when a person has muscle damage, including damage to the heart muscle. In addition, an enzyme called CK-MB is released into the blood when the heart muscle is damaged. High levels of CK-MB in the blood can mean that you've had a heart attack.",
+          "Used for: Heart Attack",
+          "A lipoprotein panel, also called a lipid panel or lipid profile, measures the levels of LDL and HDL cholesterol and triglycerides in your blood. Cholesterol and triglyceride levels that are higher or lower than normal may be signs of higher risk of coronary heart disease.",
+          "A lipoprotein panel gives information about your:",
+          "Total cholesterol",
+          "LDL (\"bad\") cholesterol, which is the main source of cholesterol buildup and blockages in the arteries",
+          "HDL (\"good\") cholesterol, which helps decrease cholesterol blockages in the arteries",
+          "Triglycerides , which are a type of fat in your blood",
+          "Most people will need to fast for 9 to 12 hours before a lipoprotein panel.",
+          "Used for: Atherosclerosis",
+          "Coronary Heart Disease",
+          "High Blood Triglycerides",
+          "Blood clotting tests are sometimes called a coagulation panel. These tests check proteins in your blood that affect the blood clotting process. Levels that are higher or lower than normal might suggest that you're at risk of bleeding or developing clots in your blood vessels.",
+          "Blood clotting tests also are used to monitor people who are taking medicines to lower the risk of blood clots. Warfarin and heparin are two examples of such medicines.",
+          "Used for: Bleeding Disorders",
+          "Platelet Disorders",
+          "Bone marrow tests check whether your bone marrow is healthy and making normal amounts of blood cells. The two bone marrow tests are aspiration and biopsy.",
+          "Aspiration collects a small amount of bone marrow fluid through a larger needle.",
+          "Biopsy tests are often done at the same time as the aspiration test. A biopsy test collects a small amount of bone marrow tissue through a larger needle.",
+          "These tests can help find the cause of low or high blood cell counts. They also play an important role in checking how well treatments for certain types of cancers, such as leukemia or lymphoma, are working.",
+          "Before this procedure, be sure to tell your provider about current medicines you are taking, known allergies to medicines, if you are pregnant, or if you have a bleeding disorder.",
+          "Bone marrow tests can be done in a hospital or doctor’s office or clinic. You may be awake for your test and may be given medicine to relax you during the test. You may also be under anesthesia for this test, if recommended by your care team. You will lie on your side or stomach or back, depending on where your provider obtains the samples from. Your provider will clean and numb the top ridge of the hipbone or rib bone, where the needle will be inserted. You may feel a brief, sharp pain when the needle is inserted and when the bone marrow is aspirated. The bone marrow samples will be studied in a laboratory.",
+          "After your test, you will have a small bandage on the site where the needle was inserted. Most people go home the same day. You will need a ride home if you received medicines to relax you during the test. You may have mild discomfort but likely won’t have any pain after the test. Your doctor may have you take an over-the-counter pain medicine. Call your provider if you are in serious pain or if you develop symptoms including:",
+          "Discharge at the needle injection site"
+        ],
+        "cleanText": "Blood Tests - Blood Tests | NHLBI, NIH Skip to main content Blood Tests Home Blood Tests 0 Blood Tests Blood Tests Blood Tests Language switcher English Español IN THIS ARTICLE Types of blood tests Types of blood tests Blood tests are very common. They help doctors check for certain diseases and conditions. They also help check the function of your organs and show how well treatments are working. Complete blood count (CBC) The complete blood count (CBC) is one of the most common blood tests. It is often done as part of a routine checkup. This test measures many different parts of your blood, including red blood cells, white blood cells, and platelets. Red blood cell levels that are higher or lower than normal could be a sign of dehydration, anemia, or bleeding. Red blood cells carry oxygen from your lungs to the rest of your body. White blood cell levels that are higher or lower than normal could be a sign of infection, blood cancer, or an immune system disorder. White blood cells are part of your immune system, which fights infections and diseases. Platelet levels that are higher or lower than normal may be a sign of a clotting disorder or a bleeding disorder. Platelets are blood cell fragments that help your blood clot. They stick together to seal cuts or breaks on blood vessel walls and stop bleeding. Hemoglobin levels that are lower than normal may be a sign of anemia, sickle cell disease, or thalassemia. Hemoglobin is an iron-rich protein in red blood cells that carries oxygen. Hematocrit levels that are too high might mean you’re dehydrated. Low hematocrit levels may be a sign of anemia. Hematocrit is a measure of how much space red blood cells take up in your blood. Mean corpuscular volume (MCV) levels that are lower than normal may be a sign of anemia or thalassemia. MCV is a measure of the average size of your red blood cells. The table below shows some normal adult ranges for different parts of the CBC test. Some of the normal ranges differ between men and women. Other factors, such as age, high altitude, and race, also may affect normal ranges. Your healthcare provider should discuss your results with you. They will advise you further if your results are outside the normal range for your group. Test Normal Range Results* Red blood cell Adult Men: 5 to 6 million cells/mcL Adult Women: 4 to 5 million cells/mcL White blood cell 4,500 to 10,000 cells/mcL Platelets 140,000 to 450,000 cells/mcL Hemoglobin (varies with altitude) Adult Men: 14 to 17 gm/dL Adult Women:12 to 15 gm/dL Hematocrit (varies with altitude) Adult Men: 41% to 50 % Adult Women: 36% to 44% Mean corpuscular volume 0 to 95 femtoliter† * Cells/mcL = cells per microliter; gm/dL = grams per deciliter. † A femtoliter is a measure of volume. Used for: Anemia Bleeding Disorders Blood Cholesterol Blood Clotting Disorders Sickle Cell Disease Thalassemia Blood chemistry tests/basic metabolic panel The basic metabolic panel (BMP) is a group of tests that measures different naturally occurring chemicals in the blood. These tests usually are done on the fluid (plasma) part of blood. The tests can give providers information about your organs, such as the heart, kidneys, and liver. The BMP includes blood glucose, calcium, and electrolyte tests, as well as blood tests that measure kidney function. Some of these tests require you to fast (not eat any food) before the test, and others don't. Your provider will tell you how to prepare for the test(s) you're having. Used for: Heart Failure High Blood Pressure Blood enzyme tests Blood enzyme tests may be used to check for heart attack. Enzymes are chemicals that help control chemical reactions in your body. There are many types of blood enzyme tests. The ones for heart attack include troponin and creatine kinase (CK) tests. Blood levels of troponin go up when a person has muscle damage, including damage to the heart muscle. In addition, an enzyme called CK-MB is released into the blood when the heart muscle is damaged. High levels of CK-MB in the blood can mean that you've had a heart attack. Used for: Heart Attack Lipoprotein panel A lipoprotein panel, also called a lipid panel or lipid profile, measures the levels of LDL and HDL cholesterol and triglycerides in your blood. Cholesterol and triglyceride levels that are higher or lower than normal may be signs of higher risk of coronary heart disease. A lipoprotein panel gives information about your: Total cholesterol LDL (\"bad\") cholesterol, which is the main source of cholesterol buildup and blockages in the arteries HDL (\"good\") cholesterol, which helps decrease cholesterol blockages in the arteries Triglycerides , which are a type of fat in your blood Most people will need to fast for 9 to 12 hours before a lipoprotein panel. Used for: Atherosclerosis Blood Cholesterol Coronary Heart Disease High Blood Triglycerides Blood clotting tests Blood clotting tests are sometimes called a coagulation panel. These tests check proteins in your blood that affect the blood clotting process. Levels that are higher or lower than normal might suggest that you're at risk of bleeding or developing clots in your blood vessels. Blood clotting tests also are used to monitor people who are taking medicines to lower the risk of blood clots. Warfarin and heparin are two examples of such medicines. Used for: Bleeding Disorders Blood Clotting Disorders Platelet Disorders Bone marrow tests Bone marrow tests Bone marrow tests check whether your bone marrow is healthy and making normal amounts of blood cells. The two bone marrow tests are aspiration and biopsy. Aspiration collects a small amount of bone marrow fluid through a larger needle. Biopsy tests are often done at the same time as the aspiration test. A biopsy test collects a small amount of bone marrow tissue through a larger needle. These tests can help find the cause of low or high blood cell counts. They also play an important role in checking how well treatments for certain types of cancers, such as leukemia or lymphoma, are working. Before this procedure, be sure to tell your provider about current medicines you are taking, known allergies to medicines, if you are pregnant, or if you have a bleeding disorder. Bone marrow tests can be done in a hospital or doctor’s office or clinic. You may be awake for your test and may be given medicine to relax you during the test. You may also be under anesthesia for this test, if recommended by your care team. You will lie on your side or stomach or back, depending on where your provider obtains the samples from. Your provider will clean and numb the top ridge of the hipbone or rib bone, where the needle will be inserted. You may feel a brief, sharp pain when the needle is inserted and when the bone marrow is aspirated. The bone marrow samples will be studied in a laboratory. After your test, you will have a small bandage on the site where the needle was inserted. Most people go home the same day. You will need a ride home if you received medicines to relax you during the test. You may have mild discomfort but likely won’t have any pain after the test. Your doctor may have you take an over-the-counter pain medicine. Call your provider if you are in serious pain or if you develop symptoms including: Fever Redness Swelling Discharge at the needle injection site Used for: Anemia Platelet Disorders Last updated on March 24, 2022"
+      },
+      "normalized": {
+        "sourceId": "nhlbi-blood-tests",
+        "organization": "National Heart, Lung, and Blood Institute (NHLBI) / NIH",
+        "title": "Blood Tests - Blood Tests | NHLBI, NIH",
+        "url": "https://www.nhlbi.nih.gov/health/blood-tests",
+        "accessedAt": "2026-09-02",
+        "sections": [
+          {
+            "category": "reference_ranges",
+            "snippets": [
+              "The table below shows some normal adult ranges for different parts of the CBC test. Some of the normal ranges differ between men and women. Other factors, such as age, high altitude, and race, also may affect normal ranges.",
+              "Your healthcare provider should discuss your results with you. They will advise you further if your results are outside the normal range for your group.",
+              "* Cells/mcL = cells per microliter; gm/dL = grams per deciliter. † A femtoliter is a measure of volume."
+            ]
+          },
+          {
+            "category": "low_associations",
+            "snippets": [
+              "Red blood cell levels that are higher or lower than normal could be a sign of dehydration, anemia, or bleeding. Red blood cells carry oxygen from your lungs to the rest of your body.",
+              "White blood cell levels that are higher or lower than normal could be a sign of infection, blood cancer, or an immune system disorder. White blood cells are part of your immune system, which fights infections and diseases.",
+              "Platelet levels that are higher or lower than normal may be a sign of a clotting disorder or a bleeding disorder. Platelets are blood cell fragments that help your blood clot. They stick together to seal cuts or breaks on blood vessel walls and stop bleeding.",
+              "Hemoglobin levels that are lower than normal may be a sign of anemia, sickle cell disease, or thalassemia. Hemoglobin is an iron-rich protein in red blood cells that carries oxygen.",
+              "Hematocrit levels that are too high might mean you’re dehydrated. Low hematocrit levels may be a sign of anemia. Hematocrit is a measure of how much space red blood cells take up in your blood.",
+              "Mean corpuscular volume (MCV) levels that are lower than normal may be a sign of anemia or thalassemia. MCV is a measure of the average size of your red blood cells.",
+              "Used for: Anemia",
+              "A lipoprotein panel, also called a lipid panel or lipid profile, measures the levels of LDL and HDL cholesterol and triglycerides in your blood. Cholesterol and triglyceride levels that are higher or lower than normal may be signs of higher risk of coronary heart disease.",
+              "Blood clotting tests are sometimes called a coagulation panel. These tests check proteins in your blood that affect the blood clotting process. Levels that are higher or lower than normal might suggest that you're at risk of bleeding or developing clots in your blood vessels."
+            ]
+          },
+          {
+            "category": "monitoring",
+            "snippets": [
+              "Blood tests are very common. They help doctors check for certain diseases and conditions. They also help check the function of your organs and show how well treatments are working.",
+              "Bone marrow tests can be done in a hospital or doctor’s office or clinic. You may be awake for your test and may be given medicine to relax you during the test. You may also be under anesthesia for this test, if recommended by your care team. You will lie on your side or stomach or back, depending on where your provider obtains the samples from. Your provider will clean and numb the top ridge of the hipbone or rib bone, where the needle will be inserted. You may feel a brief, sharp pain when the needle is inserted and when the bone marrow is aspirated. The bone marrow samples will be studied in a laboratory.",
+              "After your test, you will have a small bandage on the site where the needle was inserted. Most people go home the same day. You will need a ride home if you received medicines to relax you during the test. You may have mild discomfort but likely won’t have any pain after the test. Your doctor may have you take an over-the-counter pain medicine. Call your provider if you are in serious pain or if you develop symptoms including:"
+            ]
+          },
+          {
+            "category": "general",
+            "snippets": [
+              "Blood Tests - Blood Tests | NHLBI, NIH Skip to main content Blood Tests Home",
+              "The complete blood count (CBC) is one of the most common blood tests. It is often done as part of a routine checkup. This test measures many different parts of your blood, including red blood cells, white blood cells, and platelets.",
+              "Bleeding Disorders",
+              "Blood Cholesterol",
+              "Blood Clotting Disorders"
+            ]
+          }
+        ]
+      },
+      "fetchStatus": "success"
+    }
+  ]
+}

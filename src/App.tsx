@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { db, clearAllLocalHealthData } from './lib/db';
-import { deriveKeyFromPassphrase, createNewSaltBase64, getOrEnsureCryptoKey } from './lib/key-management';
+import { 
+  deriveKeyFromPassphrase, 
+  createNewSaltBase64, 
+  initializeVault, 
+  unlockVault, 
+  unlockVaultWithRecoveryKey,
+  generateMasterRecoveryKey,
+  changePassword,
+  getStoredVaultMetadata 
+} from './lib/key-management';
 import { checkStoragePersistence, requestStoragePersistence } from './lib/storage';
 import { seedInitialSampleData } from './lib/utils';
 import { decryptData } from './lib/crypto';
@@ -13,12 +22,10 @@ import { Sidebar, type ActiveTab } from './components/layout/Sidebar';
 import { Footer } from './components/layout/Footer';
 import { SplashScreen } from './components/common/SplashScreen';
 
-// Auth Modals
-import { FirstTimeWelcomeModal } from './components/auth/FirstTimeWelcomeModal';
-import { VaultSetupModal } from './components/auth/VaultSetupModal';
-import { UnlockVaultModal } from './components/auth/UnlockVaultModal';
-import { SameDeviceWelcomeModal } from './components/auth/SameDeviceWelcomeModal';
-import { NewDeviceModal } from './components/auth/NewDeviceModal';
+// Auth Screen & API
+import { AuthScreen } from './components/auth/AuthScreen';
+import { authApi, getAuthToken } from './lib/api';
+import type { UserProfile, DeviceInfo } from './types/auth';
 
 // Health Views
 import { HealthReportCard } from './components/health/HealthReportCard';
@@ -28,7 +35,6 @@ import { ViewReportModal } from './components/health/ViewReportModal';
 import { VitalsTracker } from './components/health/VitalsTracker';
 import { MedicationsTracker } from './components/health/MedicationsTracker';
 import { HealthProfile } from './components/health/HealthProfile';
-import { LocalInsights } from './components/health/LocalInsights';
 import { AIDietInsights } from './components/health/AIDietInsights';
 import { DashboardQuickUpload } from './components/health/DashboardQuickUpload';
 import { HealthTrajectoryChart } from './components/health/HealthTrajectoryChart';
@@ -60,6 +66,10 @@ export default function App() {
   const [fullRecoveryKey, setFullRecoveryKey] = useState<string>('');
   const [showFirstTimeWelcome, setShowFirstTimeWelcome] = useState<boolean>(false);
 
+  // Authenticated user & device metadata
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
+  const [currentDevice, setCurrentDevice] = useState<DeviceInfo | null>(null);
+
   // Storage Persistence state
   const [storageStatus, setStorageStatus] = useState<StorageStatus>({
     isPersistent: false,
@@ -82,15 +92,12 @@ export default function App() {
       root.classList.add('dark', `theme-${appTheme}`);
     }
   }, [appTheme]);
+
   const [decryptedReports, setDecryptedReports] = useState<Record<string, DecryptedReportDetails>>({});
   const [selectedReport, setSelectedReport] = useState<HealthReport | null>(null);
   const [aiReportId, setAiReportId] = useState<string>('');
 
   // Modals
-  const [showSetupModal, setShowSetupModal] = useState<boolean>(false);
-  const [showUnlockModal, setShowUnlockModal] = useState<boolean>(false);
-  const [showSameDeviceModal, setShowSameDeviceModal] = useState<boolean>(false);
-  const [showNewDeviceModal, setShowNewDeviceModal] = useState<boolean>(false);
   const [showAddReportModal, setShowAddReportModal] = useState<boolean>(false);
   const [showDriveModal, setShowDriveModal] = useState<boolean>(false);
 
@@ -104,8 +111,10 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    loadReports();
-  }, [isUnlocked]);
+    if (isUnlocked && encryptionKey) {
+      loadReports(encryptionKey);
+    }
+  }, [isUnlocked, encryptionKey]);
 
   async function checkStorage() {
     const status = await checkStoragePersistence();
@@ -119,57 +128,47 @@ export default function App() {
 
   async function initAppVault() {
     try {
+      // Clean up legacy keys
+      await db.settings.delete('vault_crypto_key').catch(() => {});
+      await db.settings.delete('vault_recovery_key').catch(() => {});
+
+      const metadata = await getStoredVaultMetadata();
       const saltRecord = await db.settings.get('vault_salt');
       const userIdRecord = await db.settings.get('vault_user_id');
-      const recKeyRecord = await db.settings.get('vault_recovery_key');
       const nameRecord = await db.settings.get('vault_user_name');
-      const cryptoKeyRecord = await db.settings.get('vault_crypto_key');
 
-      let currentSalt = saltRecord?.value;
+      let currentSalt = metadata?.salt || saltRecord?.value;
       if (!currentSalt) {
         currentSalt = createNewSaltBase64();
         await db.settings.put({ key: 'vault_salt', value: currentSalt });
       }
       setSaltBase64(currentSalt);
 
-      let currentUserId = userIdRecord?.value;
-      if (!currentUserId) {
-        currentUserId = `usr_${Date.now().toString(36)}`;
-        await db.settings.put({ key: 'vault_user_id', value: currentUserId });
-      }
-      setUserId(currentUserId);
+      if (userIdRecord?.value) setUserId(userIdRecord.value);
+      if (nameRecord?.value) setUserName(nameRecord.value);
 
-      if (nameRecord && nameRecord.value && nameRecord.value.trim()) {
-        setUserName(nameRecord.value.trim());
-        setShowFirstTimeWelcome(false);
-      } else {
-        setUserName('');
-        setShowFirstTimeWelcome(true);
-      }
-
-      if (recKeyRecord) {
-        setFullRecoveryKey(recKeyRecord.value);
-        setRecoveryKeySnippet(recKeyRecord.value);
+      // Check for active Django auth token
+      const token = getAuthToken();
+      if (token) {
+        try {
+          const meRes = await authApi.getMe();
+          if (meRes.success && meRes.user) {
+            setCurrentUser(meRes.user);
+            setUserName(meRes.user.name);
+            setUserId(meRes.user.id);
+          }
+        } catch {
+          // Token expired or server unreachable
+        }
       }
 
-      const activeKey = await getOrEnsureCryptoKey(
-        cryptoKeyRecord && cryptoKeyRecord.value ? (cryptoKeyRecord.value as unknown as CryptoKey) : null
-      );
-
-      setEncryptionKey(activeKey);
-      setIsInitialized(true);
-      setIsUnlocked(true);
-      setShowUnlockModal(false);
-      setShowSameDeviceModal(false);
-      setShowNewDeviceModal(false);
-      await loadReports(activeKey);
+      setEncryptionKey(null);
+      setIsUnlocked(false);
+      setIsInitialized(!!metadata);
     } catch (err) {
-      console.error('Failed to initialize vault from local database:', err);
-      const fallbackKey = await getOrEnsureCryptoKey();
-      setEncryptionKey(fallbackKey);
+      console.error('Failed to initialize vault state from local database:', err);
       setIsInitialized(true);
-      setIsUnlocked(true);
-      setShowUnlockModal(false);
+      setIsUnlocked(false);
     }
   }
 
@@ -190,6 +189,8 @@ export default function App() {
           }
         }
         setDecryptedReports(decryptedMap);
+      } else {
+        setDecryptedReports({});
       }
     } catch (err) {
       console.error('Failed to load reports:', err);
@@ -198,92 +199,92 @@ export default function App() {
 
   const handleDeleteReport = async (reportId: string) => {
     try {
-      // Securely wipe the report and all attached metadata/files from IndexedDB
       await db.reports.delete(reportId);
-
-      // Deselect report if opened in modal or AI advisor
-      if (selectedReport?.id === reportId) {
-        setSelectedReport(null);
-      }
-      if (aiReportId === reportId) {
-        setAiReportId('');
-      }
-
-      // Refresh reports state across Dashboard and Health Records UI
+      if (selectedReport?.id === reportId) setSelectedReport(null);
+      if (aiReportId === reportId) setAiReportId('');
       await loadReports();
     } catch (err) {
       console.error('Failed to delete report from IndexedDB:', err);
     }
   };
 
-  const handleSameDeviceContinue = async () => {
-    if (encryptionKey) {
-      setIsUnlocked(true);
-      setShowSameDeviceModal(false);
-      await loadReports(encryptionKey);
-    } else {
-      setShowSameDeviceModal(false);
-      setShowUnlockModal(true);
+  const handleAuthSuccess = async (
+    user: UserProfile,
+    dek: CryptoKey,
+    device: DeviceInfo,
+    passwordUsed?: string
+  ) => {
+    setEncryptionKey(dek);
+    setIsUnlocked(true);
+    setIsInitialized(true);
+    setCurrentUser(user);
+    setCurrentDevice(device);
+    setUserId(user.id);
+    setUserName(user.name);
+
+    await db.settings.put({ key: 'vault_user_id', value: user.id });
+    await db.settings.put({ key: 'vault_user_name', value: user.name });
+
+    await loadReports(dek);
+  };
+
+  const handleUnlockVaultWithPassword = async (password: string): Promise<CryptoKey | null> => {
+    try {
+      const metadata = await getStoredVaultMetadata();
+      if (metadata) {
+        const dek = await unlockVault(password);
+        return dek;
+      } else {
+        // Vault first-time envelope initialization
+        const recoverySecret = generateMasterRecoveryKey();
+        const { dek } = await initializeVault(password, recoverySecret);
+        return dek;
+      }
+    } catch (err) {
+      console.error('Password unlock failed:', err);
+      return null;
     }
   };
 
-  const handleCompleteSetup = async (passphrase: string, recoveryKey: string, fullName: string) => {
-    const newSalt = createNewSaltBase64();
-    const newUserId = `usr_${Date.now().toString(36)}`;
-
-    // Derive encryption key
-    const derivedKey = await deriveKeyFromPassphrase(passphrase, newSalt);
-
-    // Persist non-sensitive metadata & CryptoKey in IndexedDB settings
-    await db.settings.put({ key: 'vault_salt', value: newSalt });
-    await db.settings.put({ key: 'vault_user_id', value: newUserId });
-    await db.settings.put({ key: 'vault_recovery_key', value: recoveryKey });
-    await db.settings.put({ key: 'vault_user_name', value: fullName.trim() });
-    await db.settings.put({ key: 'vault_crypto_key', value: derivedKey });
-
-    // Seed initial sample data for smooth first experience
-    await seedInitialSampleData(derivedKey, newUserId);
-
-    setEncryptionKey(derivedKey);
-    setSaltBase64(newSalt);
-    setUserId(newUserId);
-    setUserName(fullName.trim());
-    setFullRecoveryKey(recoveryKey);
-    setRecoveryKeySnippet(recoveryKey);
-    setIsInitialized(true);
-    setIsUnlocked(true);
-    setShowSetupModal(false);
-    setShowNewDeviceModal(false);
-    setShowSameDeviceModal(false);
-
-    await loadReports(derivedKey);
+  const handleUnlockVaultWithRecovery = async (recoverySecret: string): Promise<CryptoKey | null> => {
+    try {
+      const dek = await unlockVaultWithRecoveryKey(recoverySecret);
+      return dek;
+    } catch (err) {
+      console.error('Recovery unlock failed:', err);
+      return null;
+    }
   };
 
-  const handleRestoreSuccess = async (newKey: CryptoKey, salt: string) => {
-    const userIdVal = userId || `usr_${Date.now().toString(36)}`;
-    await db.settings.put({ key: 'vault_salt', value: salt });
-    await db.settings.put({ key: 'vault_user_id', value: userIdVal });
-    await db.settings.put({ key: 'vault_crypto_key', value: newKey });
-
-    setEncryptionKey(newKey);
-    setSaltBase64(salt);
-    setUserId(userIdVal);
-    setIsInitialized(true);
-    setIsUnlocked(true);
-    setShowNewDeviceModal(false);
-    setShowSameDeviceModal(false);
-    setShowUnlockModal(false);
-    await loadReports(newKey);
-    setActiveTab('dashboard');
+  const handleInitializeVault = async (password: string, recoverySecret: string) => {
+    const { metadata, dek } = await initializeVault(password, recoverySecret);
+    setSaltBase64(metadata.salt);
+    return { dek, recoverySecret };
   };
 
-  const handleFirstTimeSetup = async (name: string) => {
-    const trimmedName = name.trim();
-    if (!trimmedName) return;
+  const handleLockVault = () => {
+    setEncryptionKey(null);
+    setIsUnlocked(false);
+    setDecryptedReports({});
+  };
 
-    await db.settings.put({ key: 'vault_user_name', value: trimmedName });
-    setUserName(trimmedName);
-    setShowFirstTimeWelcome(false);
+  const handleLogout = async () => {
+    try {
+      await authApi.logout();
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
+    // Strict in-memory clearance for cross-account safety
+    setEncryptionKey(null);
+    setIsUnlocked(false);
+    setCurrentUser(null);
+    setCurrentDevice(null);
+    setDecryptedReports({});
+    setReports([]);
+    setUserId('');
+    setUserName('');
+    setSelectedReport(null);
+    setAiReportId('');
   };
 
   const handleUpdateUserName = async (newName: string) => {
@@ -291,38 +292,17 @@ export default function App() {
     setUserName(newName);
   };
 
-  const handleUnlock = async (passphraseOrRecoveryKey: string): Promise<boolean> => {
-    try {
-      let salt = saltBase64;
-      if (!salt) {
-        salt = createNewSaltBase64();
-        await db.settings.put({ key: 'vault_salt', value: salt });
-        setSaltBase64(salt);
-      }
-
-      const derivedKey = await deriveKeyFromPassphrase(passphraseOrRecoveryKey, salt);
-
-      await db.settings.put({ key: 'vault_crypto_key', value: derivedKey });
-      setEncryptionKey(derivedKey);
-      setIsUnlocked(true);
-      setShowUnlockModal(false);
-      setShowSameDeviceModal(false);
-      await loadReports(derivedKey);
-      return true;
-    } catch (err) {
-      console.error('Unlock error:', err);
-      const activeKey = await getOrEnsureCryptoKey();
-      setEncryptionKey(activeKey);
-      setIsUnlocked(true);
-      setShowUnlockModal(false);
-      await loadReports(activeKey);
-      return true;
-    }
-  };
-
-  const handleLockVault = () => {
-    setEncryptionKey(null);
-    setIsUnlocked(false);
+  const handleRestoreSuccess = async (newKey: CryptoKey, salt: string) => {
+    const userIdVal = userId || `usr_${Date.now().toString(36)}`;
+    await db.settings.put({ key: 'vault_salt', value: salt });
+    await db.settings.put({ key: 'vault_user_id', value: userIdVal });
+    setEncryptionKey(newKey);
+    setSaltBase64(salt);
+    setUserId(userIdVal);
+    setIsInitialized(true);
+    setIsUnlocked(true);
+    await loadReports(newKey);
+    setActiveTab('dashboard');
   };
 
   const handleDeleteAllData = async () => {
@@ -333,9 +313,7 @@ export default function App() {
     setIsInitialized(false);
     setUserName('');
     setReports([]);
-    setShowSameDeviceModal(false);
-    setShowUnlockModal(false);
-    setShowFirstTimeWelcome(true);
+    setShowSplashScreen(false);
   };
 
   const filteredReports = reports.filter((r) => {
@@ -346,6 +324,23 @@ export default function App() {
       (r.doctorName && r.doctorName.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesCategory && matchesSearch;
   });
+
+  // Render Splash Screen
+  if (showSplashScreen) {
+    return <SplashScreen onFinish={() => setShowSplashScreen(false)} durationMs={3200} />;
+  }
+
+  // Render Unified Auth & Device Verification Screen when locked
+  if (!isUnlocked) {
+    return (
+      <AuthScreen
+        onAuthSuccess={handleAuthSuccess}
+        onUnlockVaultWithPassword={handleUnlockVaultWithPassword}
+        onUnlockVaultWithRecovery={handleUnlockVaultWithRecovery}
+        onInitializeVault={handleInitializeVault}
+      />
+    );
+  }
 
   return (
     <div
@@ -359,16 +354,12 @@ export default function App() {
           : 'bg-stone-950 text-stone-100'
       }`}
     >
-      {showSplashScreen && (
-        <SplashScreen onFinish={() => setShowSplashScreen(false)} durationMs={3200} />
-      )}
-
       <MobileHeader
         activeTab={activeTab}
         isUnlocked={isUnlocked}
         onOpenDrawer={() => setIsMobileDrawerOpen(true)}
         onLockVault={handleLockVault}
-        onUnlockVault={() => setShowUnlockModal(true)}
+        onUnlockVault={() => {}}
         onOpenRecoveryKey={() => setActiveTab('privacy')}
         userId={userId}
         userName={userName}
@@ -380,8 +371,9 @@ export default function App() {
         isUnlocked={isUnlocked}
         isPersistent={storageStatus.isPersistent}
         onLockVault={handleLockVault}
-        onUnlockVault={() => setShowUnlockModal(true)}
+        onUnlockVault={() => {}}
         onOpenRecoveryKey={() => setActiveTab('privacy')}
+        onLogout={handleLogout}
         userId={userId}
         userName={userName}
         currentTheme={appTheme}
@@ -476,7 +468,7 @@ export default function App() {
                 userId={userId}
                 onReportAdded={() => loadReports()}
                 isUnlocked={isUnlocked}
-                onUnlockRequest={() => setShowUnlockModal(true)}
+                onUnlockRequest={() => setIsUnlocked(false)}
               />
 
               {/* Health Progression & Trajectory Graph (Increment / Decrement) */}
@@ -485,14 +477,6 @@ export default function App() {
                 userId={userId}
                 reports={reports}
                 onAddDataClick={() => setShowAddReportModal(true)}
-              />
-
-              {/* On-Device Local Insights */}
-              <LocalInsights
-                reportCount={reports.length}
-                vitalsCount={12}
-                isUnlocked={isUnlocked}
-                onNavigateTab={(tab) => setActiveTab(tab as ActiveTab)}
               />
 
               {/* Recent Medical Events Table */}
@@ -618,14 +602,17 @@ export default function App() {
             </div>
           )}
 
-          {/* AI DIET & LAB INSIGHTS TAB */}
+          {/* GET INSIGHTS / LAB INSIGHTS TAB */}
           {activeTab === 'ai-advisor' && (
             <AIDietInsights
               reports={reports}
               decryptedReports={decryptedReports}
+              encryptionKey={encryptionKey}
               userName={userName}
               selectedReportId={aiReportId}
               onSelectReport={(id) => setAiReportId(id)}
+              onViewReport={(r) => setSelectedReport(r)}
+              onNavigateToUpload={() => setShowAddReportModal(true)}
             />
           )}
 
@@ -677,55 +664,6 @@ export default function App() {
         lastBackupDate={new Date().toISOString()}
       />
 
-      {/* First-Time User Welcome Modal */}
-      {showFirstTimeWelcome && !showSplashScreen && (
-        <FirstTimeWelcomeModal onComplete={handleFirstTimeSetup} />
-      )}
-
-      {/* MODALS */}
-      {showSameDeviceModal && (
-        <SameDeviceWelcomeModal
-          userName={userName}
-          onContinue={handleSameDeviceContinue}
-          onOpenRecoveryOrReset={() => {
-            setShowSameDeviceModal(false);
-            setShowUnlockModal(true);
-          }}
-        />
-      )}
-
-      {showNewDeviceModal && (
-        <NewDeviceModal
-          onSelectRestoreFile={() => {
-            setShowNewDeviceModal(false);
-            setActiveTab('settings');
-          }}
-          onSelectGoogleDrive={() => {
-            setShowNewDeviceModal(false);
-            setShowDriveModal(true);
-          }}
-          onCreateNewVault={() => {
-            setShowNewDeviceModal(false);
-            setShowSetupModal(true);
-          }}
-        />
-      )}
-
-      {showSetupModal && (
-        <VaultSetupModal onCompleteSetup={handleCompleteSetup} />
-      )}
-
-      {showUnlockModal && !showSetupModal && !showSameDeviceModal && (
-        <UnlockVaultModal
-          onUnlock={handleUnlock}
-          userName={userName}
-          onResetVaultPrompt={() => {
-            setShowUnlockModal(false);
-            handleDeleteAllData();
-          }}
-        />
-      )}
-
       {showAddReportModal && encryptionKey && (
         <AddHealthDataModal
           encryptionKey={encryptionKey}
@@ -748,7 +686,7 @@ export default function App() {
           encryptionKey={encryptionKey}
           onClose={() => setSelectedReport(null)}
           onDeleteReport={handleDeleteReport}
-          onAnalyzeWithAI={(reportId) => {
+          onGetInsights={(reportId) => {
             setSelectedReport(null);
             setAiReportId(reportId);
             setActiveTab('ai-advisor');

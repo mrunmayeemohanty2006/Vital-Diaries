@@ -1,0 +1,61 @@
+{
+  "reportId": "report_01_cbc",
+  "title": "Complete Blood Count (CBC) Panel",
+  "patientType": "Standard Adult",
+  "groundTruth": {
+    "Hemoglobin": {
+      "value": 11.2,
+      "unit": "g/dL",
+      "referenceRange": "12.0 - 15.0",
+      "status": "low"
+    },
+    "Total RBC": {
+      "value": 4.20,
+      "unit": "million/uL",
+      "referenceRange": "3.80 - 5.20",
+      "status": "normal"
+    },
+    "Hematocrit": {
+      "value": 35.5,
+      "unit": "%",
+      "referenceRange": "36.0 - 46.0",
+      "status": "low"
+    },
+    "MCV": {
+      "value": 84.5,
+      "unit": "fL",
+      "referenceRange": "80.0 - 96.0",
+      "status": "normal"
+    },
+    "MCH": {
+      "value": 26.7,
+      "unit": "pg",
+      "referenceRange": "26.0 - 32.0",
+      "status": "normal"
+    },
+    "MCHC": {
+      "value": 31.5,
+      "unit": "g/dL",
+      "referenceRange": "31.0 - 36.0",
+      "status": "normal"
+    },
+    "RDW": {
+      "value": 14.8,
+      "unit": "%",
+      "referenceRange": "11.5 - 14.5",
+      "status": "high"
+    },
+    "Total WBC": {
+      "value": 6200,
+      "unit": "cells/uL",
+      "referenceRange": "4000 - 11000",
+      "status": "normal"
+    },
+    "Platelet Count": {
+      "value": 2.45,
+      "unit": "lakh/uL",
+      "referenceRange": "1.5 - 4.5",
+      "status": "normal"
+    }
+  }
+}
