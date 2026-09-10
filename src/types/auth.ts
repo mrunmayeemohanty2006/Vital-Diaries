@@ -12,6 +12,17 @@ export interface UserProfile {
   last_login?: string;
 }
 
+export interface UserAccount {
+  id: string;
+  email: string;           // Normalized lowercase email (Unique key)
+  name: string;
+  passwordHash: string;    // Base64 PBKDF2-HMAC-SHA256 verification hash (NEVER plaintext)
+  passwordSalt: string;    // Base64 16-byte random salt
+  kdfIterations: number;   // 100,000
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface DeviceInfo {
   device_id: string;
   device_name: string;

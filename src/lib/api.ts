@@ -135,9 +135,17 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
   return data as T;
 }
 
+import {
+  registerLocalAccount,
+  verifyAccountCredentials,
+  accountToUserProfile,
+  normalizeEmail,
+} from './account-store';
+
 export const authApi = {
   async register(name: string, email: string, password: string) {
     setAuthToken(null);
+    const cleanEmail = normalizeEmail(email);
     const deviceMeta = getClientDeviceMetadata();
 
     try {
@@ -150,32 +158,35 @@ export const authApi = {
       }>('/auth/register/', {
         method: 'POST',
         body: JSON.stringify({
-          name,
-          email,
+          name: name.trim(),
+          email: cleanEmail,
           password,
           ...deviceMeta,
         }),
       });
+
+      // Also ensure local account record is stored for offline resilience
+      try {
+        await registerLocalAccount(name, cleanEmail, password);
+      } catch {
+        // Account may already exist locally if previously created
+      }
+
       if (res.token) setAuthToken(res.token);
       return res;
     } catch (err: any) {
-      // If backend is unreachable or not hosted (static frontend deployment)
-      // fallback to secure local-first browser account
       const isNetworkOr404 =
         err?.message?.includes('404') ||
         err?.message?.includes('Failed to fetch') ||
         err?.message?.includes('NetworkError') ||
-        err?.message?.includes('status 405');
+        err?.message?.includes('status 405') ||
+        err?.message?.includes('503');
 
       if (isNetworkOr404) {
-        const localUser: UserProfile = {
-          id: `usr_${Date.now().toString(36)}`,
-          email: email.trim().toLowerCase(),
-          name: name.trim(),
-          is_staff: false,
-          is_superuser: false,
-          created_at: new Date().toISOString(),
-        };
+        // Deterministic local-first account registration
+        const newAccount = await registerLocalAccount(name, cleanEmail, password);
+        const localUser = accountToUserProfile(newAccount);
+
         const localDevice: DeviceInfo = {
           device_id: deviceMeta.device_id,
           device_name: deviceMeta.device_name,
@@ -186,8 +197,7 @@ export const authApi = {
           last_seen_at: new Date().toISOString(),
         };
 
-        localStorage.setItem(`vital_user_${localUser.email}`, JSON.stringify(localUser));
-        localStorage.setItem('vital_active_email', localUser.email);
+        localStorage.setItem('vital_active_email', cleanEmail);
         setAuthToken(`local_token_${localUser.id}`);
 
         return {
@@ -205,6 +215,7 @@ export const authApi = {
 
   async login(email: string, password: string) {
     setAuthToken(null);
+    const cleanEmail = normalizeEmail(email);
     const deviceMeta = getClientDeviceMetadata();
 
     try {
@@ -219,7 +230,7 @@ export const authApi = {
       }>('/auth/login/', {
         method: 'POST',
         body: JSON.stringify({
-          email,
+          email: cleanEmail,
           password,
           ...deviceMeta,
         }),
@@ -227,31 +238,21 @@ export const authApi = {
       if (res.token) setAuthToken(res.token);
       return res;
     } catch (err: any) {
-      // If backend is unreachable or not hosted (static frontend deployment)
-      // fallback to secure local-first browser login
       const isNetworkOr404 =
         err?.message?.includes('404') ||
         err?.message?.includes('Failed to fetch') ||
         err?.message?.includes('NetworkError') ||
-        err?.message?.includes('status 405');
+        err?.message?.includes('status 405') ||
+        err?.message?.includes('503');
 
       if (isNetworkOr404) {
-        const cleanEmail = email.trim().toLowerCase();
-        let storedUser: UserProfile | null = null;
-        try {
-          const raw = localStorage.getItem(`vital_user_${cleanEmail}`);
-          if (raw) storedUser = JSON.parse(raw);
-        } catch {}
+        // Deterministic local-first credential verification
+        const authResult = await verifyAccountCredentials(cleanEmail, password);
+        if (!authResult.success || !authResult.account) {
+          throw new Error(authResult.error || 'Invalid email or password.');
+        }
 
-        const user: UserProfile = storedUser || {
-          id: `usr_${Date.now().toString(36)}`,
-          email: cleanEmail,
-          name: cleanEmail.split('@')[0] || 'Patient',
-          is_staff: false,
-          is_superuser: false,
-          created_at: new Date().toISOString(),
-        };
-
+        const localUser = accountToUserProfile(authResult.account);
         const localDevice: DeviceInfo = {
           device_id: deviceMeta.device_id,
           device_name: deviceMeta.device_name,
@@ -262,14 +263,13 @@ export const authApi = {
           last_seen_at: new Date().toISOString(),
         };
 
-
         localStorage.setItem('vital_active_email', cleanEmail);
-        setAuthToken(`local_token_${user.id}`);
+        setAuthToken(`local_token_${localUser.id}`);
 
         return {
           success: true,
-          token: `local_token_${user.id}`,
-          user,
+          token: `local_token_${localUser.id}`,
+          user: localUser,
           device: localDevice,
           requires_device_verification: false,
         };

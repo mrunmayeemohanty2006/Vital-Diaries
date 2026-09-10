@@ -234,12 +234,8 @@ export default function App() {
       if (metadata) {
         const dek = await unlockVault(password);
         return dek;
-      } else {
-        // Vault first-time envelope initialization
-        const recoverySecret = generateMasterRecoveryKey();
-        const { dek } = await initializeVault(password, recoverySecret);
-        return dek;
       }
+      return null;
     } catch (err) {
       console.error('Password unlock failed:', err);
       return null;

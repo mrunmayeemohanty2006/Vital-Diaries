@@ -135,15 +135,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
       if (dek) {
         onAuthSuccess(user, dek, device, password);
       } else {
-        // If local vault doesn't exist yet on this device, initialize it with password
-        try {
-          const recoverySecret = generateMasterRecoveryKey();
-          const initRes = await onInitializeVault(password, recoverySecret);
-          onAuthSuccess(user, initRes.dek, device, password);
-        } catch {
-          setError('Vault password mismatch or local vault requires recovery key.');
-          setMode('recovery_key_input');
-        }
+        setError('Incorrect password. Please verify your credentials or use your master recovery key.');
       }
     } catch (err: any) {
       setError(err.message || 'Invalid email or password.');

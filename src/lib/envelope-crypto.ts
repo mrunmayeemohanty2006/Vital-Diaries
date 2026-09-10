@@ -428,3 +428,62 @@ export async function changeVaultPassword(
 
   return { updatedMetadata, dek };
 }
+
+/**
+ * Hashes a plaintext password using PBKDF2-HMAC-SHA256 (100,000 iterations) with a cryptographic salt.
+ * Used exclusively for authentication verification. NEVER stores plaintext passwords.
+ */
+export async function hashPasswordForVerification(
+  password: string,
+  saltBytes?: Uint8Array
+): Promise<{ hashBase64: string; saltBase64: string; iterations: number }> {
+  const crypto = getCrypto();
+  const salt = saltBytes || generateSalt(KDF_CONFIG.saltSizeBytes);
+  const encoder = new TextEncoder();
+  const passwordBytes = encoder.encode(password.normalize('NFKC'));
+
+  const baseKey = await crypto.subtle.importKey(
+    'raw',
+    passwordBytes,
+    { name: 'PBKDF2' },
+    false,
+    ['deriveBits']
+  );
+
+  const derivedBits = await crypto.subtle.deriveBits(
+    {
+      name: 'PBKDF2',
+      salt,
+      iterations: KDF_CONFIG.iterations,
+      hash: KDF_CONFIG.hash,
+    },
+    baseKey,
+    256 // 256 bits = 32 bytes
+  );
+
+  return {
+    hashBase64: bytesToBase64(derivedBits),
+    saltBase64: bytesToBase64(salt),
+    iterations: KDF_CONFIG.iterations,
+  };
+}
+
+/**
+ * Verifies a candidate password against a stored verification hash and salt.
+ * Returns true only if the candidate password produces an exact hash match.
+ */
+export async function verifyPasswordHash(
+  candidatePassword: string,
+  storedHashBase64: string,
+  storedSaltBase64: string
+): Promise<boolean> {
+  if (!candidatePassword || !storedHashBase64 || !storedSaltBase64) return false;
+  try {
+    const saltBytes = base64ToBytes(storedSaltBase64);
+    const { hashBase64: candidateHash } = await hashPasswordForVerification(candidatePassword, saltBytes);
+    return candidateHash === storedHashBase64;
+  } catch {
+    return false;
+  }
+}
+

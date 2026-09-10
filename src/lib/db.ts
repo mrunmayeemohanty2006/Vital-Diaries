@@ -8,8 +8,10 @@ import type {
   LocalSetting 
 } from '../types/health';
 import type { BackupHistoryItem } from '../types/backup';
+import type { UserAccount } from '../types/auth';
 
 export class HealthDatabase extends Dexie {
+  accounts!: Table<UserAccount, string>;
   reports!: Table<HealthReport, string>;
   vitalsLog!: Table<VitalLogEntry, string>;
   symptoms!: Table<SymptomEntry, string>;
@@ -23,6 +25,7 @@ export class HealthDatabase extends Dexie {
 
     // Schema definition for Dexie IndexedDB
     this.version(1).stores({
+      accounts: 'id, &email, createdAt',
       reports: 'id, userId, date, type, createdAt',
       vitalsLog: 'id, userId, date, timestamp, createdAt',
       symptoms: 'id, userId, date, timestamp, createdAt',
