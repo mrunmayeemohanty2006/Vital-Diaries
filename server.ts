@@ -10,8 +10,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const currentDirname = typeof __dirname !== 'undefined' ? __dirname : process.cwd();
 
 function isPortOpen(port: number, host = '127.0.0.1'): Promise<boolean> {
   return new Promise((resolve) => {
@@ -41,11 +40,11 @@ async function ensureDjangoRunning() {
   }
 
   console.log('⚡ Starting Django Backend on http://127.0.0.1:8000...');
-  const pythonPath = path.join(__dirname, 'backend/venv/bin/python');
-  const managePy = path.join(__dirname, 'backend/manage.py');
+  const pythonPath = path.join(currentDirname, 'backend/venv/bin/python');
+  const managePy = path.join(currentDirname, 'backend/manage.py');
 
   const djangoProcess = spawn(pythonPath, [managePy, 'runserver', '127.0.0.1:8000', '--noreload'], {
-    cwd: path.join(__dirname, 'backend'),
+    cwd: path.join(currentDirname, 'backend'),
     stdio: 'inherit',
   });
 
@@ -405,7 +404,7 @@ Provide an empathetic, clear, evidence-based answer explaining the physiological
     });
     app.use(vite.middlewares);
   } else {
-    const distPath = path.join(__dirname, 'dist');
+    const distPath = path.join(currentDirname, 'dist');
     app.use(express.static(distPath));
     app.get('*', (req, res) => {
       res.sendFile(path.join(distPath, 'index.html'));
