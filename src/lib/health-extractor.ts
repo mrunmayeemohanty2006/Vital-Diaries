@@ -16,6 +16,7 @@
 
 import {
   CANONICAL_MEDICAL_VOCABULARY,
+  CANONICAL_UNIT_MAP,
   matchCanonicalParameter,
   normalizeUnit,
 } from './ocr-medical-vocab';
@@ -757,6 +758,11 @@ export function isAdministrativeOrMetadataLine(line: string): boolean {
     /^(?:registered\s*office|cin\s*:|iso\s*\d+|nabl\s*certificate|most\s*trusted\s*brand|satisfied\s*customers|labs\s*booked)/i,
     /^(?:disclaimer|end\s*of\s*report|as\s*per\s*the\s*recommendation|dhss\s*:|calculated\s*parameters\s*are\s*either|this\s*test\s*has\s*been\s*performed)/i,
     /^(?:comment:|comments:|note:|factors\s*that\s*interfere|adapted\s*from|interpretation:|please\s*note)/i,
+    /^(?:rx\b|rx\s*:|tab\.?|cap\.?|syp\.?|inj\.?|ointment\b|gargle\b|drops\b|dosage\b|signature\b|advice\b|instructions\b|treatment\b)/i,
+    /^(?:diagnosis\b|provisional\s*diagnosis|final\s*diagnosis|chief\s*complaints?|history\s*of\s*present|past\s*medical|clinical\s*history|course\s*in\s*hospital|condition\s*on\s*discharge|discharge\s*medications?|medical\s*fitness|sick\s*leave)/i,
+    /\b(?:1\s*tab|2\s*tabs?|1-0-1|0-1-0|1-0-0|0-0-1|1-1-1|once\s*daily|twice\s*daily|thrice\s*daily|\s*od\b|\s*bd\b|\s*bid\b|\s*tid\b|\s*qid\b|\s*sos\b|after\s*food|before\s*food|at\s*bedtime|for\s*\d+\s*days|warm\s*fluids|voice\s*rest|bed\s*rest|resume\s*duties)\b/i,
+    /^(?:tax\s*invoice|invoice\b|subtotal|sub\s*total|grand\s*total|total\s*amount|balance\s*due|amount\s*payable|gstin|cgst|sgst|igst|discount|item\s*description|unit\s*price|qty\b|quantity|payment\s*method|bill\s*to|ship\s*to)/i,
+    /^(?:bank\s*statement|statement\s*of\s*account|account\s*number|ifsc\s*code|opening\s*balance|closing\s*balance|atm\s*withdrawal|cheque\s*no|deposit|transaction\s*id|restaurant|gratuity|table\s*no|server\s*:)/i,
     /^(?:[≤<>≥]\s*\d+(?:\.\d+)?|\d+(?:\.\d+)?\s*[-–—]\s*\d+(?:\.\d+)?)\s*(?:normal|at risk|diabetes|prediabetes|desirable|optimal|borderline|high|critical|acceptable|elevated)\b/i,
     /^(?:following\s*a\s*3-step|ensuring\s*accuracy|have\s*concerns|reach\s*out|care@|1800-)/i,
     /^(?:---+\s*page\s*\d+\s*---+)/i,
@@ -856,15 +862,19 @@ export function parseGenericClinicalRow(
         (canonicalMatch && d.canonicalName === canonicalMatch.canonicalName)
       );
 
-      // Sentence & Conversational Preposition Guard for non-canonical candidates
+      // Sentence & Conversational Preposition / Verb Guard for non-canonical candidates
       if (!canonicalMatch && !defMatch) {
-        if (/^(?:a|an|the|every|within|approx|approximately|about|between|following|recommended|suggested|adapted|note|dhss|comment|comments|interpretation)\b/i.test(paramNameCandidate)) {
+        if (/^(?:a|an|the|every|within|approx|approximately|about|between|following|recommended|suggested|adapted|note|dhss|comment|comments|interpretation|which|who|that|patient|was|showed|revealed|had|underwent|with|managed)\b/i.test(paramNameCandidate)) {
           continue;
         }
-        if (/\b(?:to|of|for|in|at|by|with|from|and|or|the|a|an|is|are|be|every|per|monthly|daily|weekly|yearly|hours|days|months|years|interval|testing|guideline|recommendation|system|measure|measurement)\b$/i.test(paramNameCandidate)) {
+        if (/\b(?:to|of|for|in|at|by|with|from|and|or|the|a|an|is|are|was|were|be|been|have|has|had|every|per|monthly|daily|weekly|yearly|hours|days|months|years|interval|testing|guideline|recommendation|system|measure|measurement)\b$/i.test(paramNameCandidate)) {
           continue;
         }
-        if (/\b(?:recommended|suggested|interval|testing|guideline|adapted|according|standardization|sequential|performed|concern|reach|contact|flowcytometry|flowcytometric)\b/i.test(paramNameCandidate)) {
+        if (/\b(?:recommended|suggested|interval|testing|guideline|adapted|according|standardization|sequential|performed|concern|reach|contact|flowcytometry|flowcytometric|showed|revealed|underwent|managed|admitted|complaints|history|stenosis|artery|infarction|diagnosed|treatment|prescribed|advised)\b/i.test(paramNameCandidate)) {
+          continue;
+        }
+        // Lab parameter names are noun phrases, typically under 5 words without full sentence structure
+        if (paramNameCandidate.split(/\s+/).length > 5 || /[.;?!]/.test(paramNameCandidate)) {
           continue;
         }
       }
@@ -986,9 +996,12 @@ export function parseGenericClinicalRow(
         });
       } else {
         // UNRECOGNIZED BIOMARKER — 100% PRESERVE DOCUMENT TRUTH FOR USER VERIFICATION
-        if (score < 20 && !refRange && !rawUnitStr) continue;
+        const cleanUnit = rawUnitStr ? rawUnitStr.trim().toLowerCase().replace(/^[(\[]|[)\]]$/g, '') : '';
+        const normalizedUnit = CANONICAL_UNIT_MAP[cleanUnit] || UNIT_NORMALIZATION_MAP[cleanUnit];
+        
+        // Non-canonical biomarker candidates MUST have a valid recognized clinical unit OR an explicit reference range OR an explicit clinical status
+        if (!normalizedUnit && !refRange && !ocrStatus) continue;
 
-        const normalizedUnit = normalizeUnit(rawUnitStr) || rawUnitStr || '';
         let calculatedStatus: 'low' | 'normal' | 'high' | 'unknown' | 'low-normal' | 'high-normal' = 'unknown';
         if (refRange && typeof refRange.low === 'number' && typeof refRange.high === 'number') {
           if (numericVal < refRange.low) calculatedStatus = 'low';
@@ -998,14 +1011,16 @@ export function parseGenericClinicalRow(
           calculatedStatus = ocrStatus;
         }
 
+        const finalUnit = normalizedUnit || rawUnitStr || '';
+
         scoredCandidates.push({
           score,
           metric: {
             name: paramNameCandidate,
             rawName: paramNameCandidate,
             value: numericVal,
-            unit: normalizedUnit,
-            displayValue: normalizedUnit ? `${numericVal} ${normalizedUnit}` : `${numericVal}`,
+            unit: finalUnit,
+            displayValue: finalUnit ? `${numericVal} ${finalUnit}` : `${numericVal}`,
             referenceRange: refRange ? { ...refRange, source: 'ocr' } : undefined,
             referenceRangeSource: refRange ? 'ocr' : 'missing',
             status: calculatedStatus,

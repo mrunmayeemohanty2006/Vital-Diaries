@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { X, FileText, FlaskConical, Heart, FileCode, ArrowRight, Upload, Lock, Plus, Trash2, CheckCircle2, Loader2, Sparkles, Image as ImageIcon } from 'lucide-react';
 import { db } from '../../lib/db';
 import { encryptData } from '../../lib/crypto';
+import { performLocalOCR } from '../../lib/ocr';
+import { extractHealthData } from '../../lib/health-extractor';
+import { validateMedicalDocument } from '../../lib/medical-document-validator';
 import type { HealthReport } from '../../types/health';
 
 interface AddHealthDataModalProps {
@@ -99,42 +102,47 @@ export const AddHealthDataModal: React.FC<AddHealthDataModalProps> = ({
           }
         }
 
-        const response = await fetch('/api/parse-lab-report', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            fileBase64: base64Data,
-            mimeType: file.type,
-            fileName: file.name,
-          }),
+        // 1. Perform 100% Local On-Device OCR
+        setScanSuccessMsg('Performing on-device optical character recognition...');
+        const ocrResult = await performLocalOCR(file);
+        const ocrText = ocrResult.text;
+
+        // 2. Perform 100% Local Medical Document Validation Gate
+        const validation = validateMedicalDocument(ocrText, {
+          fileName: file.name,
+          source: ocrResult.source,
         });
 
-        const resData = await response.json();
-        if (resData.success && resData.data) {
-          const data = resData.data;
-          if (data.title) setTitle(data.title);
-          if (data.date) setDate(data.date);
-          if (data.doctorName) setDoctorName(data.doctorName);
-          if (data.facility) setFacility(data.facility);
-          if (data.notes || data.summary) {
-            setNotes(`${data.summary ? data.summary + '\n\n' : ''}${data.notes || ''}`.trim());
-          }
-          if (Array.isArray(data.results) && data.results.length > 0) {
-            setLabResults(data.results.map((r: any) => ({
-              key: r.key || '',
-              value: r.value || (r.unit ? `${r.value} ${r.unit}` : ''),
-            })));
-          }
-          setScanSuccessMsg(`Scanned "${file.name}"! Key fields populated.`);
-        } else {
-          setTitle(file.name.replace(/\.[^/.]+$/, ''));
-          setScanSuccessMsg(`Uploaded file "${file.name}". Ready to save.`);
+        if (!validation.isSupportedLabReport) {
+          setError(validation.userMessage);
+          setScanSuccessMsg('');
+          setIsScanning(false);
+          // HALT: Do not populate form fields from invalid document
+          return;
         }
+
+        // 3. Perform 100% Local Health Data Extraction
+        const data = extractHealthData(ocrText, { source: ocrResult.source });
+
+        if (data.title) setTitle(data.title);
+        if (data.extractedDate) setDate(data.extractedDate);
+        if (data.reportType && ['cbc', 'imaging', 'cardiology', 'general', 'vaccine', 'genomics', 'other'].includes(data.reportType)) {
+          setReportType(data.reportType as HealthReport['type']);
+        }
+        if (data.summary) {
+          setNotes(data.summary);
+        }
+        if (Array.isArray(data.metrics) && data.metrics.length > 0) {
+          setLabResults(data.metrics.map((r: any) => ({
+            key: r.name || '',
+            value: r.displayValue || (r.unit ? `${r.value} ${r.unit}` : String(r.value)),
+          })));
+        }
+        setScanSuccessMsg(`Scanned "${file.name}"! Key fields populated.`);
       };
       reader.readAsDataURL(file);
     } catch (err: any) {
-      setError('File uploaded locally. You can proceed with title and notes.');
-      setTitle(file.name.replace(/\.[^/.]+$/, ''));
+      setError(err.message || 'Error processing document locally');
     } finally {
       setIsScanning(false);
     }

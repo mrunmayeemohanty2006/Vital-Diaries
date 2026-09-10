@@ -4,6 +4,7 @@ import { db } from '../../lib/db';
 import { encryptData } from '../../lib/crypto';
 import { performLocalOCR } from '../../lib/ocr';
 import { extractHealthData } from '../../lib/health-extractor';
+import { validateMedicalDocument } from '../../lib/medical-document-validator';
 import type { HealthReport } from '../../types/health';
 
 interface AddReportModalProps {
@@ -98,7 +99,21 @@ export const AddReportModal: React.FC<AddReportModalProps> = ({
           fileName: file.name
         });
 
-        // 2. Perform 100% Local Health Data Extraction
+        // 2. Perform 100% Local Medical Document Validation Gate
+        const validation = validateMedicalDocument(ocrText, {
+          fileName: file.name,
+          source: ocrResult.source,
+        });
+
+        if (!validation.isSupportedLabReport) {
+          setError(validation.userMessage);
+          setScanSuccessMsg('');
+          setIsScanning(false);
+          // HALT: Do not populate form fields from invalid non-lab/non-medical document
+          return;
+        }
+
+        // 3. Perform 100% Local Health Data Extraction
         const extractedData = extractHealthData(ocrText, { source: ocrResult.source });
 
         // Populate form fields from extracted deterministic result

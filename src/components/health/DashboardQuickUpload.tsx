@@ -5,6 +5,7 @@ import { encryptData } from '../../lib/crypto';
 import { getOrEnsureCryptoKey } from '../../lib/key-management';
 import { performLocalOCR } from '../../lib/ocr';
 import { extractHealthData } from '../../lib/health-extractor';
+import { validateMedicalDocument } from '../../lib/medical-document-validator';
 import type { HealthReport } from '../../types/health';
 
 interface DashboardQuickUploadProps {
@@ -57,7 +58,23 @@ export const DashboardQuickUpload: React.FC<DashboardQuickUploadProps> = ({
       }
       console.log(`===== VITAL DIARIES RAW OCR START =====\n${ocrText}\n===== VITAL DIARIES RAW OCR END =====`);
 
-      // 2. Perform 100% Local Health Data Extraction
+      // 2. Perform 100% Local Deterministic Medical Document Validation Gate
+      setUploadStatus('Validating medical laboratory document locally...');
+      const validation = validateMedicalDocument(ocrText, {
+        fileName: file.name,
+        source: ocrResult.source,
+      });
+
+      if (!validation.isSupportedLabReport) {
+        setError(validation.userMessage);
+        setUploadStatus(null);
+        setIsUploading(false);
+        // CRITICAL PRIVACY & DATA INTEGRITY GATE:
+        // Halt immediately — zero encryption, zero IndexedDB write, zero event generation.
+        return;
+      }
+
+      // 3. Perform 100% Local Health Data Extraction
       setUploadStatus('Parsing health metrics locally...');
       console.error("VITAL_DIARIES_CALLER", "DashboardQuickUpload", {
         inputOcrLength: ocrText?.length ?? 0,
@@ -65,7 +82,7 @@ export const DashboardQuickUpload: React.FC<DashboardQuickUploadProps> = ({
       });
       const extractedData = extractHealthData(ocrText, { source: ocrResult.source });
 
-      // 3. Read file as Data URL / Base64 locally for exact original file byte storage
+      // 4. Read file as Data URL / Base64 locally for exact original file byte storage
       const dataUrl = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result as string);
