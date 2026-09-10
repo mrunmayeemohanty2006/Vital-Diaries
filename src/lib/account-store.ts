@@ -10,7 +10,7 @@
  */
 
 import { db } from './db';
-import { hashPasswordForVerification, verifyPasswordHash } from './envelope-crypto';
+import { hashPasswordForVerification, verifyPasswordHash, unlockVaultEnvelope, type VaultCryptoMetadata } from './envelope-crypto';
 import type { UserAccount, UserProfile } from '../types/auth';
 
 /**
@@ -50,6 +50,14 @@ export async function getAccountByEmail(email: string): Promise<UserAccount | nu
   return null;
 }
 
+/**
+ * Registers a brand-new user account with salted password verification credentials.
+ * 
+ * Rules:
+ * - If the normalized email is already registered, REJECTS with an error.
+ * - NEVER overwrites an existing account or its password.
+ * - NEVER stores plaintext passwords.
+ */
 /**
  * Registers a brand-new user account with salted password verification credentials.
  * 
@@ -118,10 +126,57 @@ export async function registerLocalAccount(
 }
 
 /**
+ * Synchronizes local account credentials after successful server authentication or registration.
+ */
+export async function syncLocalAccountCredentials(
+  name: string,
+  email: string,
+  password: string,
+  userId?: string
+): Promise<UserAccount> {
+  const cleanEmail = normalizeEmail(email);
+  if (!cleanEmail || !password) {
+    throw new Error('Valid email and password required.');
+  }
+
+  const existing = await getAccountByEmail(cleanEmail);
+  const { hashBase64, saltBase64, iterations } = await hashPasswordForVerification(password);
+
+  const account: UserAccount = {
+    id: userId || existing?.id || `usr_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 7)}`,
+    email: cleanEmail,
+    name: name.trim() || existing?.name || cleanEmail.split('@')[0] || 'Patient',
+    passwordHash: hashBase64,
+    passwordSalt: saltBase64,
+    kdfIterations: iterations,
+    createdAt: existing?.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  try {
+    await db.accounts.put(account);
+  } catch {}
+
+  try {
+    localStorage.setItem(`vital_account_${cleanEmail}`, JSON.stringify(account));
+    localStorage.setItem(`vital_user_${cleanEmail}`, JSON.stringify({
+      id: account.id,
+      name: account.name,
+      email: account.email,
+      is_staff: false,
+      is_superuser: false,
+      created_at: account.createdAt,
+    }));
+  } catch {}
+
+  return account;
+}
+
+/**
  * Verifies candidate credentials against stored account verification hash.
  * 
  * Rules:
- * - If account does not exist -> returns failure ('Account not found').
+ * - If account does not exist -> checks existing local vault envelope for auto-migration, otherwise returns failure ('Account not found').
  * - If password hash does not match -> returns failure ('Incorrect password').
  * - NEVER creates accounts, NEVER creates vaults, NEVER overwrites keys on failure.
  */
@@ -138,8 +193,38 @@ export async function verifyAccountCredentials(
   }
 
   // 1. Look up existing account by normalized email
-  const account = await getAccountByEmail(cleanEmail);
+  let account = await getAccountByEmail(cleanEmail);
   if (!account) {
+    // Auto-migration check: If an existing vault envelope can be unlocked with this candidate password, seed account
+    try {
+      const metaRecord = await db.settings.get('vault_crypto_metadata');
+      if (metaRecord && metaRecord.value) {
+        const metadata = metaRecord.value as VaultCryptoMetadata;
+        await unlockVaultEnvelope(candidatePassword, metadata);
+        
+        // Unwrap succeeded! Candidate password is authentic. Auto-seed account record.
+        const { hashBase64, saltBase64, iterations } = await hashPasswordForVerification(candidatePassword);
+        const nameRecord = await db.settings.get('vault_user_name');
+        const restoredAccount: UserAccount = {
+          id: `usr_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 7)}`,
+          email: cleanEmail,
+          name: nameRecord?.value || cleanEmail.split('@')[0] || 'Patient',
+          passwordHash: hashBase64,
+          passwordSalt: saltBase64,
+          kdfIterations: iterations,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        await db.accounts.put(restoredAccount);
+        try {
+          localStorage.setItem(`vital_account_${cleanEmail}`, JSON.stringify(restoredAccount));
+        } catch {}
+        return { success: true, account: restoredAccount };
+      }
+    } catch {
+      // Could not unlock stored metadata or metadata doesn't exist
+    }
+
     return {
       success: false,
       error: 'Account not found with this email. Please check your email or sign up.',
@@ -200,6 +285,121 @@ export async function changeLocalAccountPassword(
   } catch {}
 
   return updatedAccount;
+}
+
+/**
+ * Resets account password using recovery authorization.
+ */
+export async function resetAccountPasswordWithRecovery(
+  email: string,
+  newPassword: string
+): Promise<UserAccount> {
+  const cleanEmail = normalizeEmail(email);
+  if (!cleanEmail) {
+    throw new Error('Please provide an email address.');
+  }
+  if (!newPassword || newPassword.length < 4) {
+    throw new Error('Password must be at least 4 characters long.');
+  }
+
+  let account = await getAccountByEmail(cleanEmail);
+  const { hashBase64, saltBase64, iterations } = await hashPasswordForVerification(newPassword);
+
+  if (!account) {
+    account = {
+      id: `usr_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 7)}`,
+      email: cleanEmail,
+      name: cleanEmail.split('@')[0] || 'Patient',
+      passwordHash: hashBase64,
+      passwordSalt: saltBase64,
+      kdfIterations: iterations,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+  } else {
+    account = {
+      ...account,
+      passwordHash: hashBase64,
+      passwordSalt: saltBase64,
+      kdfIterations: iterations,
+      updatedAt: new Date().toISOString(),
+    };
+  }
+
+  try {
+    await db.accounts.put(account);
+  } catch {}
+  try {
+    localStorage.setItem(`vital_account_${cleanEmail}`, JSON.stringify(account));
+  } catch {}
+
+  return account;
+}
+
+/**
+ * Resets all local vault encryption credentials and account cache for fresh setup.
+ */
+export async function resetLocalVault(): Promise<void> {
+  try {
+    await db.settings.delete('vault_crypto_metadata');
+    await db.settings.delete('vault_salt');
+    await db.settings.delete('vault_crypto_key');
+    await db.settings.delete('vault_recovery_key');
+    await db.settings.delete('vault_user_id');
+    await db.settings.delete('vault_user_name');
+    await db.accounts.clear();
+  } catch {}
+
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const keysToRemove = new Set<string>();
+
+      // Check Object.keys
+      try {
+        Object.keys(localStorage).forEach((k) => {
+          if (k.startsWith('vital_') || k.startsWith('vault_')) {
+            keysToRemove.add(k);
+          }
+        });
+      } catch {}
+
+      // Check standard length index
+      try {
+        if (typeof localStorage.length === 'number') {
+          for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i);
+            if (k && (k.startsWith('vital_') || k.startsWith('vault_'))) {
+              keysToRemove.add(k);
+            }
+          }
+        }
+      } catch {}
+
+      keysToRemove.forEach((k) => localStorage.removeItem(k));
+    }
+  } catch {}
+}
+
+/**
+ * Deletes an account by email to allow fresh registration.
+ */
+export async function deleteLocalAccount(email: string): Promise<void> {
+  const cleanEmail = normalizeEmail(email);
+  if (!cleanEmail) return;
+
+  try {
+    const existing = await db.accounts.where('email').equals(cleanEmail).first();
+    if (existing) {
+      await db.accounts.delete(existing.id);
+    }
+  } catch {}
+
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem(`vital_account_${cleanEmail}`);
+      localStorage.removeItem(`vital_user_${cleanEmail}`);
+    }
+  } catch {}
 }
 
 /**

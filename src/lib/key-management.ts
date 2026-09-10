@@ -4,6 +4,7 @@ import {
   createVaultEnvelope,
   unlockVaultEnvelope,
   unlockVaultWithRecovery,
+  reWrapVaultWithPassword,
   changeVaultPassword,
   generateDEK,
   generateRecoverySecret,
@@ -54,7 +55,7 @@ export async function deriveKeyFromPassphrase(
 }
 
 /**
- * Retrieves persisted VaultCryptoMetadata from IndexedDB settings if present.
+ * Retrieves persisted VaultCryptoMetadata from IndexedDB settings or localStorage fallback.
  */
 export async function getStoredVaultMetadata(): Promise<VaultCryptoMetadata | null> {
   try {
@@ -62,9 +63,19 @@ export async function getStoredVaultMetadata(): Promise<VaultCryptoMetadata | nu
     if (record && record.value) {
       return record.value as VaultCryptoMetadata;
     }
-  } catch (err) {
-    console.error('Error fetching vault metadata from database:', err);
+  } catch {
+    // Graceful fallback when IndexedDB is not available
   }
+
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const raw = localStorage.getItem(VAULT_METADATA_KEY);
+      if (raw) {
+        return JSON.parse(raw) as VaultCryptoMetadata;
+      }
+    }
+  } catch {}
+
   return null;
 }
 
@@ -72,7 +83,7 @@ export async function getStoredVaultMetadata(): Promise<VaultCryptoMetadata | nu
  * Initializes a new vault envelope with dual-envelope protection:
  * 1. Generates salt, derives password KEK, generates random 256-bit DEK, and wraps DEK.
  * 2. Generates recovery salt, derives recovery KEK, and wraps the SAME DEK for recovery.
- * 3. Persists public metadata in db.settings ('vault_crypto_metadata').
+ * 3. Persists public metadata in db.settings ('vault_crypto_metadata') and localStorage.
  * 4. Removes any legacy 'vault_crypto_key' and 'vault_recovery_key' plaintext entries.
  * 5. Returns the unwrapped active DEK and the generated recoverySecret.
  */
@@ -82,24 +93,32 @@ export async function initializeVault(
 ): Promise<{ metadata: VaultCryptoMetadata; dek: CryptoKey; recoverySecret: string }> {
   const { metadata, dek, recoverySecret } = await createVaultEnvelope(passphrase, customRecoverySecret);
 
-  // Persist public envelope metadata and salt
-  await db.settings.put({ key: VAULT_METADATA_KEY, value: metadata });
-  await db.settings.put({ key: 'vault_salt', value: metadata.salt });
+  // Persist public envelope metadata and salt in IndexedDB
+  try {
+    await db.settings.put({ key: VAULT_METADATA_KEY, value: metadata });
+    await db.settings.put({ key: 'vault_salt', value: metadata.salt });
+  } catch {}
+
+  // Dual-layer sync to localStorage
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(VAULT_METADATA_KEY, JSON.stringify(metadata));
+      localStorage.setItem('vault_salt', metadata.salt);
+    }
+  } catch {}
 
   // Clean up any legacy persistent key and plaintext recovery string
   try {
     await db.settings.delete('vault_crypto_key');
     await db.settings.delete('vault_recovery_key');
-  } catch {
-    // Ignore if not present
-  }
+  } catch {}
 
   return { metadata, dek, recoverySecret };
 }
 
 /**
  * Unlocks an existing vault envelope using the passphrase:
- * 1. Reads 'vault_crypto_metadata' from IndexedDB.
+ * 1. Reads 'vault_crypto_metadata' from IndexedDB or localStorage.
  * 2. Derives KEK and unwraps the DEK.
  * 3. Returns the active DEK for in-memory encryption/decryption.
  * 4. Throws if password is incorrect or data is tampered.
@@ -115,7 +134,7 @@ export async function unlockVault(passphrase: string): Promise<CryptoKey> {
 
 /**
  * Unlocks an existing vault envelope using the emergency recovery secret:
- * 1. Reads 'vault_crypto_metadata' from IndexedDB.
+ * 1. Reads 'vault_crypto_metadata' from IndexedDB or localStorage.
  * 2. Derives Recovery KEK and unwraps the DEK.
  * 3. Returns the active DEK.
  * 4. Throws if recovery secret is incorrect.
@@ -127,6 +146,52 @@ export async function unlockVaultWithRecoveryKey(recoverySecret: string): Promis
   }
 
   return unlockVaultWithRecovery(recoverySecret, metadata);
+}
+
+/**
+ * Unlocks the vault using the recovery key and re-wraps it with a new password.
+ * Enables full account password recovery without losing access to encrypted medical records.
+ */
+export async function recoverAndResetPassword(
+  recoverySecret: string,
+  newPassword: string,
+  email?: string
+): Promise<{ updatedMetadata: VaultCryptoMetadata; dek: CryptoKey }> {
+  const metadata = await getStoredVaultMetadata();
+  if (!metadata) {
+    throw new Error('Cannot recover: No vault metadata found on this device.');
+  }
+
+  // 1. Authenticate recovery secret and unwrap existing DEK
+  const dek = await unlockVaultWithRecovery(recoverySecret, metadata);
+
+  // 2. Re-wrap existing DEK under new password KEK
+  const updatedMetadata = await reWrapVaultWithPassword(dek, newPassword, metadata);
+
+  // 3. Persist updated metadata and salt
+  try {
+    await db.settings.put({ key: VAULT_METADATA_KEY, value: updatedMetadata });
+    await db.settings.put({ key: 'vault_salt', value: updatedMetadata.salt });
+  } catch {}
+
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(VAULT_METADATA_KEY, JSON.stringify(updatedMetadata));
+      localStorage.setItem('vault_salt', updatedMetadata.salt);
+    }
+  } catch {}
+
+  // 4. Update local account record if email is known
+  if (email) {
+    try {
+      const { resetAccountPasswordWithRecovery } = await import('./account-store');
+      await resetAccountPasswordWithRecovery(email, newPassword);
+    } catch (e) {
+      console.error('Failed to sync account store after recovery:', e);
+    }
+  }
+
+  return { updatedMetadata, dek };
 }
 
 /**
@@ -148,8 +213,17 @@ export async function changePassword(
 
   const { updatedMetadata, dek } = await changeVaultPassword(oldPassword, newPassword, metadata);
 
-  await db.settings.put({ key: VAULT_METADATA_KEY, value: updatedMetadata });
-  await db.settings.put({ key: 'vault_salt', value: updatedMetadata.salt });
+  try {
+    await db.settings.put({ key: VAULT_METADATA_KEY, value: updatedMetadata });
+    await db.settings.put({ key: 'vault_salt', value: updatedMetadata.salt });
+  } catch {}
+
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(VAULT_METADATA_KEY, JSON.stringify(updatedMetadata));
+      localStorage.setItem('vault_salt', updatedMetadata.salt);
+    }
+  } catch {}
 
   return { updatedMetadata, dek };
 }

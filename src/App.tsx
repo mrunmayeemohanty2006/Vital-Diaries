@@ -234,8 +234,15 @@ export default function App() {
       if (metadata) {
         const dek = await unlockVault(password);
         return dek;
+      } else {
+        // First login on this browser profile: initialize vault for the authenticated user
+        const recoverySecret = generateMasterRecoveryKey();
+        const initRes = await initializeVault(password, recoverySecret);
+        setSaltBase64(initRes.metadata.salt);
+        setFullRecoveryKey(recoverySecret);
+        setRecoveryKeySnippet(recoverySecret);
+        return initRes.dek;
       }
-      return null;
     } catch (err) {
       console.error('Password unlock failed:', err);
       return null;
@@ -245,6 +252,8 @@ export default function App() {
   const handleUnlockVaultWithRecovery = async (recoverySecret: string): Promise<CryptoKey | null> => {
     try {
       const dek = await unlockVaultWithRecoveryKey(recoverySecret);
+      setFullRecoveryKey(recoverySecret);
+      setRecoveryKeySnippet(recoverySecret);
       return dek;
     } catch (err) {
       console.error('Recovery unlock failed:', err);
@@ -255,6 +264,8 @@ export default function App() {
   const handleInitializeVault = async (password: string, recoverySecret: string) => {
     const { metadata, dek } = await initializeVault(password, recoverySecret);
     setSaltBase64(metadata.salt);
+    setFullRecoveryKey(recoverySecret);
+    setRecoveryKeySnippet(recoverySecret);
     return { dek, recoverySecret };
   };
 

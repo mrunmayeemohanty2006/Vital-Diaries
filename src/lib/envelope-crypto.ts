@@ -210,6 +210,41 @@ export async function deriveKEK(
 }
 
 /**
+ * Normalizes a recovery secret into the canonical VITA-XXXX-XXXX-XXXX-XXXX format.
+ * Strips formatting noise and handles missing prefixes or lowercase inputs.
+ */
+export function normalizeRecoverySecret(secret: string): string {
+  if (!secret) return '';
+  let clean = secret.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (clean.startsWith('VITA')) {
+    clean = clean.slice(4);
+  }
+  if (clean.length === 16) {
+    return `VITA-${clean.slice(0, 4)}-${clean.slice(4, 8)}-${clean.slice(8, 12)}-${clean.slice(12, 16)}`;
+  }
+  return secret.trim().toUpperCase().replace(/\s+/g, '-');
+}
+
+/**
+ * Generates viable candidate representations of a recovery secret to prevent
+ * accidental unlock failures due to slight formatting or prefix variations.
+ */
+export function getRecoverySecretCandidates(secret: string): string[] {
+  if (!secret) return [];
+  const normalized = normalizeRecoverySecret(secret);
+  const rawClean = secret.trim().toUpperCase().replace(/\s+/g, '-');
+  const noDashes = secret.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+  const raw = secret.trim();
+
+  const set = new Set<string>();
+  if (normalized) set.add(normalized);
+  if (rawClean) set.add(rawClean);
+  if (noDashes) set.add(noDashes);
+  if (raw) set.add(raw);
+  return Array.from(set);
+}
+
+/**
  * Derives a 256-bit Recovery Key Encryption Key (Recovery KEK) from the recovery secret and salt.
  */
 export async function deriveRecoveryKEK(
@@ -217,7 +252,7 @@ export async function deriveRecoveryKEK(
   recoverySalt: Uint8Array | string,
   iterations: number = KDF_CONFIG.iterations
 ): Promise<CryptoKey> {
-  const normalizedSecret = recoverySecret.trim().toUpperCase().replace(/\s+/g, '-');
+  const normalizedSecret = normalizeRecoverySecret(recoverySecret);
   return deriveKEK(normalizedSecret, recoverySalt, iterations);
 }
 
@@ -369,9 +404,10 @@ export async function unlockVaultEnvelope(
 
 /**
  * Unlocks an existing vault envelope using the recovery secret:
- * 1. Derives Recovery KEK from recovery secret + persisted recoverySalt.
- * 2. Unwraps persisted recoveryWrappedDEK using Recovery KEK and recoveryWrapIV.
- * 3. Returns the active DEK.
+ * 1. Tries candidate variations of the recovery secret.
+ * 2. Derives Recovery KEK from recovery secret + persisted recoverySalt.
+ * 3. Unwraps persisted recoveryWrappedDEK using Recovery KEK and recoveryWrapIV.
+ * 4. Returns the active DEK.
  */
 export async function unlockVaultWithRecovery(
   recoverySecret: string,
@@ -381,17 +417,49 @@ export async function unlockVaultWithRecovery(
     throw new Error('No recovery metadata configured on this vault.');
   }
 
-  const recoveryKEK = await deriveRecoveryKEK(
-    recoverySecret,
-    metadata.recovery.recoverySalt,
-    metadata.recovery.kdfParams.iterations
-  );
+  const candidates = getRecoverySecretCandidates(recoverySecret);
+  let lastError: any = null;
 
-  return unwrapDEK(
-    metadata.recovery.recoveryWrappedDEK,
-    metadata.recovery.recoveryWrapIV,
-    recoveryKEK
-  );
+  for (const candidate of candidates) {
+    try {
+      const recoveryKEK = await deriveKEK(
+        candidate,
+        metadata.recovery.recoverySalt,
+        metadata.recovery.kdfParams.iterations
+      );
+      const dek = await unwrapDEK(
+        metadata.recovery.recoveryWrappedDEK,
+        metadata.recovery.recoveryWrapIV,
+        recoveryKEK
+      );
+      return dek;
+    } catch (err) {
+      lastError = err;
+    }
+  }
+
+  throw lastError || new Error('The Recovery Key could not be verified. Please check and try again.');
+}
+
+/**
+ * Re-wraps an active DEK with a new password and fresh salt without touching medical records.
+ */
+export async function reWrapVaultWithPassword(
+  dek: CryptoKey,
+  newPassword: string,
+  metadata: VaultCryptoMetadata
+): Promise<VaultCryptoMetadata> {
+  const newSalt = generateSalt();
+  const newKEK = await deriveKEK(newPassword, newSalt);
+  const newWrapped = await wrapDEK(dek, newKEK);
+
+  return {
+    ...metadata,
+    salt: bytesToBase64(newSalt),
+    wrappedDEK: newWrapped.wrappedDEK,
+    wrapIV: newWrapped.wrapIV,
+    updatedAt: new Date().toISOString(),
+  };
 }
 
 /**
@@ -410,21 +478,7 @@ export async function changeVaultPassword(
 ): Promise<{ updatedMetadata: VaultCryptoMetadata; dek: CryptoKey }> {
   // 1. Authenticate old password and obtain existing DEK
   const dek = await unlockVaultEnvelope(oldPassword, metadata);
-
-  // 2. Generate fresh salt and derive new KEK
-  const newSalt = generateSalt();
-  const newKEK = await deriveKEK(newPassword, newSalt);
-
-  // 3. Wrap existing DEK with new KEK
-  const newWrapped = await wrapDEK(dek, newKEK);
-
-  const updatedMetadata: VaultCryptoMetadata = {
-    ...metadata,
-    salt: bytesToBase64(newSalt),
-    wrappedDEK: newWrapped.wrappedDEK,
-    wrapIV: newWrapped.wrapIV,
-    updatedAt: new Date().toISOString(),
-  };
+  const updatedMetadata = await reWrapVaultWithPassword(dek, newPassword, metadata);
 
   return { updatedMetadata, dek };
 }

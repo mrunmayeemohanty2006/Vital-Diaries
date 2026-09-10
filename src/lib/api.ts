@@ -137,6 +137,7 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
 
 import {
   registerLocalAccount,
+  syncLocalAccountCredentials,
   verifyAccountCredentials,
   accountToUserProfile,
   normalizeEmail,
@@ -165,14 +166,13 @@ export const authApi = {
         }),
       });
 
-      // Also ensure local account record is stored for offline resilience
+      // Synchronize local credential store for offline resilience & vault unlocking
       try {
-        await registerLocalAccount(name, cleanEmail, password);
-      } catch {
-        // Account may already exist locally if previously created
-      }
+        await syncLocalAccountCredentials(name, cleanEmail, password, res.user?.id);
+      } catch {}
 
       if (res.token) setAuthToken(res.token);
+      localStorage.setItem('vital_active_email', cleanEmail);
       return res;
     } catch (err: any) {
       const isNetworkOr404 =
@@ -235,23 +235,19 @@ export const authApi = {
           ...deviceMeta,
         }),
       });
+
+      // Sync local credential store with verified server credentials
+      try {
+        await syncLocalAccountCredentials(res.user?.name || cleanEmail.split('@')[0], cleanEmail, password, res.user?.id);
+      } catch {}
+
       if (res.token) setAuthToken(res.token);
+      localStorage.setItem('vital_active_email', cleanEmail);
       return res;
     } catch (err: any) {
-      const isNetworkOr404 =
-        err?.message?.includes('404') ||
-        err?.message?.includes('Failed to fetch') ||
-        err?.message?.includes('NetworkError') ||
-        err?.message?.includes('status 405') ||
-        err?.message?.includes('503');
-
-      if (isNetworkOr404) {
-        // Deterministic local-first credential verification
-        const authResult = await verifyAccountCredentials(cleanEmail, password);
-        if (!authResult.success || !authResult.account) {
-          throw new Error(authResult.error || 'Invalid email or password.');
-        }
-
+      // Fallback check against local account store (handles offline & local-first accounts)
+      const authResult = await verifyAccountCredentials(cleanEmail, password);
+      if (authResult.success && authResult.account) {
         const localUser = accountToUserProfile(authResult.account);
         const localDevice: DeviceInfo = {
           device_id: deviceMeta.device_id,
@@ -273,6 +269,11 @@ export const authApi = {
           device: localDevice,
           requires_device_verification: false,
         };
+      }
+
+      // If local credentials check failed with specific error, use it, otherwise bubble error
+      if (authResult.error && !err?.message?.includes('Invalid email or password')) {
+        throw new Error(authResult.error);
       }
 
       throw err;

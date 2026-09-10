@@ -16,10 +16,13 @@ import {
   Laptop,
   AlertCircle,
   RefreshCw,
+  RotateCcw,
 } from 'lucide-react';
 import { AuthScreenMode, UserProfile, DeviceInfo } from '../../types/auth';
 import { authApi, devicesApi, getOrCreateDeviceId, getClientDeviceMetadata } from '../../lib/api';
-import { generateMasterRecoveryKey } from '../../lib/key-management';
+import { generateMasterRecoveryKey, recoverAndResetPassword } from '../../lib/key-management';
+import { normalizeRecoverySecret } from '../../lib/envelope-crypto';
+import { resetLocalVault } from '../../lib/account-store';
 
 
 interface AuthScreenProps {
@@ -48,6 +51,9 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [recoveryInput, setRecoveryInput] = useState('');
+  const [newRecoveryPassword, setNewRecoveryPassword] = useState('');
+  const [showNewRecoveryPassword, setShowNewRecoveryPassword] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   // Generated Recovery State
   const [generatedRecoveryKey, setGeneratedRecoveryKey] = useState<string>('');
@@ -65,6 +71,12 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
+
+  const switchMode = (newMode: AuthScreenMode) => {
+    setError('');
+    setShowResetConfirm(false);
+    setMode(newMode);
+  };
 
   // Password Strength calculation
   const getPasswordStrength = (pwd: string) => {
@@ -125,7 +137,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
       // If new / untrusted device detected
       if (res?.requires_device_verification || (res?.device && res.device.trusted === false)) {
         setLoading(false);
-        setMode('new_device');
+        switchMode('new_device');
         return;
       }
 
@@ -236,15 +248,10 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
         dek = await onUnlockVaultWithRecovery(generatedRecoveryKey);
       }
       if (!dek) {
-        const initRes = await onInitializeVault(password || 'vital12345', generatedRecoveryKey || generateMasterRecoveryKey());
-        dek = initRes.dek;
+        throw new Error('Could not unlock vault. Please try logging in with your password.');
       }
 
-      if (dek) {
-        onAuthSuccess(user, dek, device, password);
-      } else {
-        setError('Could not unlock vault. Please try logging in with your password.');
-      }
+      onAuthSuccess(user, dek, device, password);
     } catch (err: any) {
       console.error('Enter Health Vault failed:', err);
       setError(err?.message || 'Failed to enter vault. Please try logging in with your password.');
@@ -290,11 +297,11 @@ IMPORTANT PRIVACY & SECURITY RULES:
     setDownloadedKey(true);
   };
 
-  // --- 4. HANDLE RECOVERY KEY UNLOCK ON NEW DEVICE ---
+  // --- 4. HANDLE RECOVERY KEY UNLOCK ON NEW DEVICE / FORGOT PASSWORD ---
   const handleRecoveryUnlockSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    const cleanSecret = recoveryInput.trim().toUpperCase();
+    const cleanSecret = normalizeRecoverySecret(recoveryInput.trim());
     if (!cleanSecret) {
       setError('Please enter your Master Recovery Key.');
       return;
@@ -304,10 +311,21 @@ IMPORTANT PRIVACY & SECURITY RULES:
     setLoadingMessage('Verifying recovery key & deriving KEK...');
 
     try {
-      // 1. Client-side cryptographic recovery unwrap
-      const dek = await onUnlockVaultWithRecovery(cleanSecret);
+      let dek: CryptoKey | null = null;
+      const targetEmail = (email || tempUser?.email || '').trim().toLowerCase();
+
+      // If user provided a new password, re-wrap DEK under new password KEK and update credentials
+      if (newRecoveryPassword && newRecoveryPassword.length >= 4) {
+        setLoadingMessage('Re-wrapping vault with new password...');
+        const resetRes = await recoverAndResetPassword(cleanSecret, newRecoveryPassword, targetEmail);
+        dek = resetRes.dek;
+      } else {
+        // 1. Client-side cryptographic recovery unwrap
+        dek = await onUnlockVaultWithRecovery(cleanSecret);
+      }
+
       if (!dek) {
-        throw new Error('The Recovery Key could not be verified. Please check and try again.');
+        throw new Error('The Master Recovery Key could not be verified for this vault. Please check and try again.');
       }
 
       // 2. Acknowledge device trust (with offline fallback)
@@ -335,22 +353,39 @@ IMPORTANT PRIVACY & SECURITY RULES:
       } catch {
         user = tempUser || {
           id: `usr_${Date.now().toString(36)}`,
-          email: email || 'user@local',
-          name: fullName || 'Patient',
+          email: targetEmail || 'user@local',
+          name: fullName || targetEmail.split('@')[0] || 'Patient',
           is_staff: false,
           is_superuser: false,
           created_at: new Date().toISOString(),
         };
       }
 
-      onAuthSuccess(user, dek, device);
+      onAuthSuccess(user, dek, device, newRecoveryPassword || password);
     } catch (err: any) {
-      setError(err.message || 'Invalid recovery key.');
+      setError(err.message || 'The Recovery Key could not be verified. Please check and try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  const handleResetVault = async () => {
+    setLoading(true);
+    setLoadingMessage('Clearing local encryption vault...');
+    try {
+      await resetLocalVault();
+      setError('');
+      setShowResetConfirm(false);
+      setRecoveryInput('');
+      setNewRecoveryPassword('');
+      setPassword('');
+      switchMode('register');
+    } catch (e: any) {
+      setError(e?.message || 'Failed to reset local vault.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // --- 5. HANDLE CROSS-DEVICE APPROVAL INITIATION ---
   const handleInitiateDeviceApproval = async () => {
@@ -362,7 +397,7 @@ IMPORTANT PRIVACY & SECURITY RULES:
       const deviceId = getOrCreateDeviceId();
       const res = await devicesApi.requestVerification(deviceId);
       setApprovalRequestId(res.request_id);
-      setMode('device_approval');
+      switchMode('device_approval');
     } catch (err: any) {
       setError(err.message || 'Failed to request approval.');
     } finally {
@@ -459,7 +494,7 @@ IMPORTANT PRIVACY & SECURITY RULES:
                   </label>
                   <button
                     type="button"
-                    onClick={() => setMode('recovery_key_input')}
+                    onClick={() => switchMode('recovery_key_input')}
                     className="text-emerald-700 font-semibold hover:underline cursor-pointer"
                   >
                     Forgot password?
@@ -702,7 +737,7 @@ IMPORTANT PRIVACY & SECURITY RULES:
               <div className="space-y-3 mb-6">
                 <button
                   type="button"
-                  onClick={() => setMode('recovery_key_input')}
+                  onClick={() => switchMode('recovery_key_input')}
                   className="w-full p-3.5 bg-stone-50 hover:bg-emerald-50 border border-stone-200 hover:border-emerald-300 rounded-xl flex items-center justify-between text-left transition-colors cursor-pointer group"
                 >
                   <div className="flex items-center gap-3">
@@ -738,7 +773,7 @@ IMPORTANT PRIVACY & SECURITY RULES:
               <div className="text-center pt-2">
                 <button
                   type="button"
-                  onClick={() => setMode('login')}
+                  onClick={() => switchMode('login')}
                   className="text-xs text-stone-500 hover:text-stone-800 underline font-medium cursor-pointer"
                 >
                   Return to Sign In
@@ -756,9 +791,9 @@ IMPORTANT PRIVACY & SECURITY RULES:
                 <Key className="w-6 h-6 text-emerald-700" />
               </div>
 
-              <h2 className="text-xl font-bold text-stone-900 mb-1">Enter Master Recovery Key</h2>
+              <h2 className="text-xl font-bold text-stone-900 mb-1">Master Recovery Key</h2>
               <p className="text-xs text-stone-500 mb-4 leading-relaxed">
-                Enter your 24-character Master Recovery Key (<code className="font-mono text-emerald-700">VITA-XXXX-...</code>) to authorize this device and derive the vault key.
+                Enter your 24-character Master Recovery Key (<code className="font-mono text-emerald-700">VITA-XXXX-...</code>) to restore access and unlock your vault.
               </p>
 
               {error && (
@@ -768,8 +803,11 @@ IMPORTANT PRIVACY & SECURITY RULES:
                 </div>
               )}
 
-              <form onSubmit={handleRecoveryUnlockSubmit} className="space-y-4">
-                <div>
+              <form onSubmit={handleRecoveryUnlockSubmit} className="space-y-3.5">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs uppercase tracking-wider text-stone-600 font-semibold ml-0.5">
+                    Recovery Secret
+                  </label>
                   <input
                     type="text"
                     value={recoveryInput}
@@ -777,8 +815,34 @@ IMPORTANT PRIVACY & SECURITY RULES:
                     placeholder="VITA-XXXX-XXXX-XXXX-XXXX"
                     required
                     autoFocus
-                    className="w-full px-4 py-3.5 bg-stone-100 border border-stone-200 rounded-xl text-stone-900 placeholder:text-stone-400 font-mono text-xs sm:text-sm tracking-wider outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-4 py-3 bg-stone-100 border border-stone-200 rounded-xl text-stone-900 placeholder:text-stone-400 font-mono text-xs sm:text-sm tracking-wider outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500"
                   />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs uppercase tracking-wider text-stone-600 font-semibold ml-0.5">
+                    Set New Password (Optional)
+                  </label>
+                  <div className="relative flex items-center">
+                    <Lock className="w-4 h-4 text-stone-400 absolute left-3.5 pointer-events-none" />
+                    <input
+                      type={showNewRecoveryPassword ? 'text' : 'password'}
+                      value={newRecoveryPassword}
+                      onChange={(e) => setNewRecoveryPassword(e.target.value)}
+                      placeholder="Enter new password to reset"
+                      className="w-full h-11 pl-10 pr-10 rounded-xl bg-stone-100 text-stone-900 placeholder:text-stone-400 text-xs sm:text-sm outline-none transition-all duration-200 focus:bg-white focus:ring-2 focus:ring-emerald-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNewRecoveryPassword(!showNewRecoveryPassword)}
+                      className="absolute right-3.5 text-stone-400 hover:text-stone-700 p-1 cursor-pointer"
+                    >
+                      {showNewRecoveryPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-stone-400 ml-1">
+                    If specified, your vault will be re-wrapped and your password updated.
+                  </p>
                 </div>
 
                 <button
@@ -800,10 +864,53 @@ IMPORTANT PRIVACY & SECURITY RULES:
                 </button>
               </form>
 
-              <div className="text-center pt-4">
+              {/* Reset Vault Helper Section */}
+              <div className="mt-4 pt-3 border-t border-stone-200">
+                {!showResetConfirm ? (
+                  <div className="text-center">
+                    <button
+                      type="button"
+                      onClick={() => setShowResetConfirm(true)}
+                      className="text-xs text-stone-500 hover:text-red-700 font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      <span>Lost recovery key? Reset local vault</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="p-3.5 bg-amber-50/90 border border-amber-300 rounded-xl text-left space-y-2.5">
+                    <div className="flex items-center gap-2 text-amber-900 font-bold text-xs">
+                      <AlertCircle className="w-4 h-4 shrink-0 text-amber-700" />
+                      <span>Reset Local Health Vault?</span>
+                    </div>
+                    <p className="text-[11px] text-amber-800 leading-snug">
+                      This will clear local credentials on this device so you can create a fresh account and password.
+                    </p>
+                    <div className="flex gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={handleResetVault}
+                        disabled={loading}
+                        className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg transition-colors cursor-pointer"
+                      >
+                        Confirm Reset
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowResetConfirm(false)}
+                        className="py-2 px-3 bg-stone-200 hover:bg-stone-300 text-stone-800 text-xs font-bold rounded-lg transition-colors cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="text-center pt-3">
                 <button
                   type="button"
-                  onClick={() => setMode('login')}
+                  onClick={() => switchMode('login')}
                   className="text-xs text-stone-500 hover:text-stone-800 underline font-medium cursor-pointer"
                 >
                   Back to Sign In
@@ -833,7 +940,7 @@ IMPORTANT PRIVACY & SECURITY RULES:
 
               <button
                 type="button"
-                onClick={() => setMode('recovery_key_input')}
+                onClick={() => switchMode('recovery_key_input')}
                 className="w-full py-3 bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold rounded-xl mb-3 transition-colors cursor-pointer"
               >
                 Use Master Recovery Key Instead
@@ -841,7 +948,7 @@ IMPORTANT PRIVACY & SECURITY RULES:
 
               <button
                 type="button"
-                onClick={() => setMode('login')}
+                onClick={() => switchMode('login')}
                 className="text-xs text-stone-500 hover:text-stone-800 underline font-medium cursor-pointer"
               >
                 Cancel and return to Sign In
@@ -857,10 +964,7 @@ IMPORTANT PRIVACY & SECURITY RULES:
                   Don't have an account?{' '}
                   <button
                     type="button"
-                    onClick={() => {
-                      setError('');
-                      setMode('register');
-                    }}
+                    onClick={() => switchMode('register')}
                     className="font-bold text-emerald-800 hover:underline ml-1 cursor-pointer"
                   >
                     Sign up
@@ -871,10 +975,7 @@ IMPORTANT PRIVACY & SECURITY RULES:
                   Already have an account?{' '}
                   <button
                     type="button"
-                    onClick={() => {
-                      setError('');
-                      setMode('login');
-                    }}
+                    onClick={() => switchMode('login')}
                     className="font-bold text-emerald-800 hover:underline ml-1 cursor-pointer"
                   >
                     Log in
