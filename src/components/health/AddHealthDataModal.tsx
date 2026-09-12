@@ -346,7 +346,7 @@ export const AddHealthDataModal: React.FC<AddHealthDataModalProps> = ({
                   {isScanning ? (
                     <div className="flex flex-col items-center justify-center py-2 text-emerald-800 dark:text-emerald-300">
                       <Loader2 className="w-6 h-6 animate-spin text-emerald-600 dark:text-emerald-400 mb-2" />
-                      <span className="text-xs font-bold">Scanning report with Gemini AI...</span>
+                      <span className="text-xs font-bold">Scanning report locally...</span>
                     </div>
                   ) : (
                     <div className="flex items-center justify-center gap-3 py-1">

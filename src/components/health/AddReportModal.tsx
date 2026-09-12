@@ -283,7 +283,7 @@ export const AddReportModal: React.FC<AddReportModalProps> = ({
             {isScanning ? (
               <div className="flex flex-col items-center justify-center py-2 text-emerald-800 dark:text-emerald-300">
                 <Loader2 className="w-6 h-6 animate-spin text-emerald-600 dark:text-emerald-400 mb-2" />
-                <span className="text-xs font-bold">Scanning report with Gemini AI...</span>
+                <span className="text-xs font-bold">Scanning report locally...</span>
                 <span className="text-[10px] text-emerald-600 dark:text-emerald-400">Extracting test parameters and preserving original file</span>
               </div>
             ) : (
