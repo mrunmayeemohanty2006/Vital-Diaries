@@ -22,8 +22,8 @@ import {
   ArrowLeft,
 } from 'lucide-react';
 import { AuthScreenMode, UserProfile, DeviceInfo } from '../../types/auth';
-import { authApi, devicesApi, getOrCreateDeviceId, getClientDeviceMetadata, checkAndNotifyNewDevice } from '../../lib/api';
-import { checkLoginApprovalStatus, cancelPendingLoginRequest } from '../../lib/trusted-devices';
+import { authApi, getOrCreateDeviceId, getClientDeviceMetadata, checkAndNotifyNewDevice } from '../../lib/api';
+import { checkLoginApprovalStatus, cancelPendingLoginRequest, createLoginApprovalRequest } from '../../lib/trusted-devices';
 import { generateMasterRecoveryKey, recoverAndResetPassword, getStoredVaultMetadata } from '../../lib/key-management';
 import { normalizeRecoverySecret } from '../../lib/envelope-crypto';
 import { resetLocalVault } from '../../lib/account-store';
@@ -452,24 +452,18 @@ IMPORTANT PRIVACY & SECURITY RULES:
         throw new Error('The Master Recovery Key could not be verified for this vault. Please check and try again.');
       }
 
-      // 2. Acknowledge device trust (with offline fallback)
+      // 2. Acknowledge device trust locally
       const deviceId = getOrCreateDeviceId();
-      let device: DeviceInfo;
-      try {
-        const recRes = await devicesApi.recoveryVerification(deviceId);
-        device = recRes.device;
-      } catch {
-        const meta = getClientDeviceMetadata();
-        device = {
-          device_id: deviceId,
-          device_name: meta.device_name,
-          platform: meta.platform,
-          browser: meta.browser,
-          trusted: true,
-          created_at: new Date().toISOString(),
-          last_seen_at: new Date().toISOString(),
-        };
-      }
+      const meta = getClientDeviceMetadata();
+      const device: DeviceInfo = {
+        device_id: deviceId,
+        device_name: meta.device_name,
+        platform: meta.platform,
+        browser: meta.browser,
+        trusted: true,
+        created_at: new Date().toISOString(),
+        last_seen_at: new Date().toISOString(),
+      };
 
       let user: UserProfile;
       try {
@@ -518,10 +512,27 @@ IMPORTANT PRIVACY & SECURITY RULES:
     setLoadingMessage('Requesting device authorization...');
 
     try {
-      const deviceId = getOrCreateDeviceId();
-      const res = await devicesApi.requestVerification(deviceId);
-      setApprovalRequestId(res.request_id);
-      switchMode('device_approval');
+      const activeId = tempUser?.id;
+      if (!activeId) {
+        throw new Error('User session not found. Please log in again.');
+      }
+      const meta = getClientDeviceMetadata();
+      const localDevice: DeviceInfo = {
+        device_id: meta.device_id,
+        device_name: meta.device_name,
+        platform: meta.platform,
+        browser: meta.browser,
+        trusted: false,
+        created_at: new Date().toISOString(),
+        last_seen_at: new Date().toISOString(),
+      };
+      const res = await createLoginApprovalRequest(activeId, localDevice);
+      if (res.success && res.request) {
+        setApprovalRequestId(res.request.id);
+        switchMode('device_approval');
+      } else {
+        throw new Error(res.error || 'Failed to request approval.');
+      }
     } catch (err: any) {
       setError(err.message || 'Failed to request approval.');
     } finally {

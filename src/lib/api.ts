@@ -1,12 +1,10 @@
 /**
- * Vital Diaries — Frontend API Client for Django Backend
- * Strictly handles identity, authentication, device authorization, and login events.
+ * Vital Diaries — Frontend Authentication & Device Identity Client
+ * Strictly handles Supabase identity, authentication, device authorization, and login events.
  * ZERO medical data, lab results, OCR text, DEKs, KEKs, or recovery secrets are sent.
  */
 
 import { UserProfile, DeviceInfo } from '../types/auth';
-
-const API_BASE = '/api';
 
 /**
  * Retrieves or generates a cryptographically random device UUID.
@@ -82,57 +80,6 @@ export function getAuthToken(): string | null {
   } catch {
     return null;
   }
-}
-
-async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const isPublicAuthEndpoint = endpoint.startsWith('/auth/login') || endpoint.startsWith('/auth/register');
-  const token = isPublicAuthEndpoint ? null : getAuthToken();
-
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    ...(options.headers as Record<string, string> || {}),
-  };
-
-  if (token) {
-    headers['Authorization'] = `Token ${token}`;
-  }
-
-  const response = await fetch(`${API_BASE}${endpoint}`, {
-    ...options,
-    headers,
-    credentials: 'include', // Support Django session cookies
-  });
-
-  const contentType = response.headers.get('content-type');
-  let data: any = {};
-  if (contentType && contentType.includes('application/json')) {
-    data = await response.json();
-  }
-
-  if (!response.ok) {
-    let errorMsg = data?.error || data?.detail;
-    if (!errorMsg && data?.details && typeof data.details === 'object') {
-      const firstKey = Object.keys(data.details)[0];
-      const val = data.details[firstKey];
-      if (Array.isArray(val) && val.length > 0) {
-        errorMsg = String(val[0]);
-      } else if (typeof val === 'string') {
-        errorMsg = val;
-      }
-    }
-    if (!errorMsg) {
-      errorMsg = `Request failed with status ${response.status}`;
-    }
-
-    // Auto-clear stale token if rejected
-    if (response.status === 401 && String(errorMsg).toLowerCase().includes('token')) {
-      setAuthToken(null);
-    }
-
-    throw new Error(errorMsg);
-  }
-
-  return data as T;
 }
 
 import { supabase } from './supabase';
@@ -493,61 +440,6 @@ export const authApi = {
     } catch (err: any) {
       return { success: true, message: 'Password updated locally.' };
     }
-  },
-};
-
-
-export const devicesApi = {
-  async listDevices() {
-    return request<{ success: boolean; devices: DeviceInfo[] }>('/devices/', { method: 'GET' });
-  },
-
-  async trustDevice(deviceId: string) {
-    return request<{ success: boolean; message: string; device: DeviceInfo }>('/devices/trust/', {
-      method: 'POST',
-      body: JSON.stringify({ device_id: deviceId }),
-    });
-  },
-
-  async revokeDevice(deviceId: string) {
-    return request<{ success: boolean; message: string; device: DeviceInfo }>('/devices/revoke/', {
-      method: 'POST',
-      body: JSON.stringify({ device_id: deviceId }),
-    });
-  },
-
-  async requestVerification(deviceId: string) {
-    return request<{
-      success: boolean;
-      request_id: string;
-      status: string;
-      device: DeviceInfo;
-    }>('/devices/verification/request/', {
-      method: 'POST',
-      body: JSON.stringify({ device_id: deviceId }),
-    });
-  },
-
-  async approveVerification(requestId: string, approved = true) {
-    return request<{
-      success: boolean;
-      message: string;
-      device?: DeviceInfo;
-    }>('/devices/verification/approve/', {
-      method: 'POST',
-      body: JSON.stringify({ request_id: requestId, approved }),
-    });
-  },
-
-  async recoveryVerification(deviceId: string) {
-    return request<{
-      success: boolean;
-      message: string;
-      device: DeviceInfo;
-    }>('/devices/verification/recovery/', {
-      method: 'POST',
-      body: JSON.stringify({ device_id: deviceId, recovery_confirmed: true }),
-    });
   },
 };
 

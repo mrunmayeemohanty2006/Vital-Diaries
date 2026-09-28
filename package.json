@@ -4,13 +4,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "tsx server.ts",
-    "build": "vite build && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs",
-    "start": "node dist/server.cjs",
-    "clean": "rm -rf dist server.js",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
-    "test": "tsx src/lib/__tests__/auth-and-key-hierarchy.test.ts && tsx src/lib/__tests__/account-credential-security.test.ts && tsx src/lib/__tests__/account-recovery-robustness.test.ts && tsx src/lib/__tests__/medical-document-validator.test.ts && tsx src/lib/__tests__/ocr-groundtruth-diagnostic.test.ts && tsx src/lib/__tests__/abnormal-panel-ocr-extractor.test.ts && tsx src/lib/__tests__/generalized-document-extraction.test.ts && tsx src/lib/__tests__/decrypt-view-pipeline.test.ts && tsx src/lib/__tests__/dynamic-lab-insights.test.ts && tsx src/lib/__tests__/phase2a-cloud-vault-sync.test.ts && tsx src/lib/__tests__/local-search.test.ts && tsx src/lib/__tests__/cloud-reports.test.ts && tsx src/lib/__tests__/phase2b-report-sync-lifecycle.test.ts && tsx src/lib/__tests__/auth-verification-and-device-security.test.ts && tsx src/lib/__tests__/trusted-device-approval.test.ts",
+    "test": "tsx src/lib/__tests__/auth-and-key-hierarchy.test.ts && tsx src/lib/__tests__/account-credential-security.test.ts && tsx src/lib/__tests__/account-recovery-robustness.test.ts && tsx src/lib/__tests__/medical-document-validator.test.ts && tsx src/lib/__tests__/ocr-groundtruth-diagnostic.test.ts && tsx src/lib/__tests__/abnormal-panel-ocr-extractor.test.ts && tsx src/lib/__tests__/generalized-document-extraction.test.ts && tsx src/lib/__tests__/decrypt-view-pipeline.test.ts && tsx src/lib/__tests__/dynamic-lab-insights.test.ts && tsx src/lib/__tests__/phase2a-cloud-vault-sync.test.ts && tsx src/lib/__tests__/local-search.test.ts && tsx src/lib/__tests__/cloud-reports.test.ts && tsx src/lib/__tests__/phase2b-report-sync-lifecycle.test.ts && tsx src/lib/__tests__/auth-verification-and-device-security.test.ts && tsx src/lib/__tests__/trusted-device-approval.test.ts && tsx src/lib/__tests__/landing-page-integration.test.ts",
     "benchmark": "tsx ocr-benchmark/benchmark-runner.ts",
     "knowledge:crawl": "tsx knowledge-pipeline/crawler/crawler.ts"
   },
@@ -21,7 +21,6 @@
     "dexie": "^4.4.4",
     "dexie-react-hooks": "^4.4.0",
     "dotenv": "^17.2.3",
-    "express": "^4.21.2",
     "jspdf": "^4.2.1",
     "lucide-react": "^0.546.0",
     "motion": "^12.23.24",
@@ -32,10 +31,8 @@
     "tesseract.js": "^7.0.0"
   },
   "devDependencies": {
-    "@types/express": "^4.17.21",
     "@types/node": "^22.14.0",
     "autoprefixer": "^10.4.21",
-    "esbuild": "^0.25.0",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.21.0",
     "typescript": "~5.8.2",
