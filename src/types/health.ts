@@ -17,8 +17,10 @@ export interface HealthReport {
   doctorName?: string;
   encryptedData: string; // Serialized JSON encrypted via Web Crypto AES-GCM
   iv: string;            // Unique 12-byte IV for AES-GCM
+  version?: number;      // Monotonic revision counter (defaults to 1)
   createdAt: string;     // ISO timestamp
   updatedAt: string;     // ISO timestamp
+  deletedAt?: string | null; // Tombstone timestamp if soft-deleted
 }
 
 export interface DecryptedReportDetails {

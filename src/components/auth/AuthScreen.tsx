@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Lock,
   Mail,
   User,
   Key,
   ShieldCheck,
+  ShieldAlert,
   ArrowRight,
   Eye,
   EyeOff,
@@ -17,33 +18,46 @@ import {
   AlertCircle,
   RefreshCw,
   RotateCcw,
+  Clock,
+  ArrowLeft,
 } from 'lucide-react';
 import { AuthScreenMode, UserProfile, DeviceInfo } from '../../types/auth';
-import { authApi, devicesApi, getOrCreateDeviceId, getClientDeviceMetadata } from '../../lib/api';
-import { generateMasterRecoveryKey, recoverAndResetPassword } from '../../lib/key-management';
+import { authApi, devicesApi, getOrCreateDeviceId, getClientDeviceMetadata, checkAndNotifyNewDevice } from '../../lib/api';
+import { checkLoginApprovalStatus, cancelPendingLoginRequest } from '../../lib/trusted-devices';
+import { generateMasterRecoveryKey, recoverAndResetPassword, getStoredVaultMetadata } from '../../lib/key-management';
 import { normalizeRecoverySecret } from '../../lib/envelope-crypto';
 import { resetLocalVault } from '../../lib/account-store';
 
 
 interface AuthScreenProps {
+  initialMode?: AuthScreenMode;
+  onBackToLanding?: () => void;
   onAuthSuccess: (
     user: UserProfile,
     dek: CryptoKey,
     device: DeviceInfo,
     passwordUsed?: string
   ) => void;
-  onUnlockVaultWithPassword: (password: string) => Promise<CryptoKey | null>;
+  onUnlockVaultWithPassword: (password: string, userId?: string) => Promise<{ dek: CryptoKey | null; error?: string } | CryptoKey | null>;
   onUnlockVaultWithRecovery: (recoverySecret: string) => Promise<CryptoKey | null>;
-  onInitializeVault: (password: string, recoverySecret: string) => Promise<{ dek: CryptoKey; recoverySecret: string }>;
+  onInitializeVault: (password: string, recoverySecret: string, userId?: string) => Promise<{ dek: CryptoKey; recoverySecret: string }>;
 }
 
 export const AuthScreen: React.FC<AuthScreenProps> = ({
+  initialMode = 'login',
+  onBackToLanding,
   onAuthSuccess,
   onUnlockVaultWithPassword,
   onUnlockVaultWithRecovery,
   onInitializeVault,
 }) => {
-  const [mode, setMode] = useState<AuthScreenMode>('login');
+  const [mode, setMode] = useState<AuthScreenMode>(initialMode);
+
+  useEffect(() => {
+    if (initialMode) {
+      setMode(initialMode);
+    }
+  }, [initialMode]);
 
   // Form Fields
   const [fullName, setFullName] = useState('');
@@ -54,6 +68,11 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
   const [newRecoveryPassword, setNewRecoveryPassword] = useState('');
   const [showNewRecoveryPassword, setShowNewRecoveryPassword] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+
+  // Email Verification State
+  const [unconfirmedEmail, setUnconfirmedEmail] = useState('');
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendSuccessMessage, setResendSuccessMessage] = useState('');
 
   // Generated Recovery State
   const [generatedRecoveryKey, setGeneratedRecoveryKey] = useState<string>('');
@@ -66,6 +85,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
 
   // Approval polling state
   const [approvalRequestId, setApprovalRequestId] = useState<string | null>(null);
+  const [approvalStatus, setApprovalStatus] = useState<'waiting' | 'approved' | 'denied' | 'expired'>('waiting');
 
   // UI state
   const [error, setError] = useState('');
@@ -74,9 +94,93 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
 
   const switchMode = (newMode: AuthScreenMode) => {
     setError('');
+    setResendSuccessMessage('');
     setShowResetConfirm(false);
+    if (newMode === 'device_approval') {
+      setApprovalStatus('waiting');
+    }
     setMode(newMode);
   };
+
+  const handleCancelApproval = async () => {
+    if (approvalRequestId && tempUser?.id) {
+      try {
+        await cancelPendingLoginRequest(approvalRequestId, tempUser.id);
+      } catch {}
+    }
+    setApprovalRequestId(null);
+    setApprovalStatus('waiting');
+    switchMode('login');
+  };
+
+  const handleResendVerification = async (targetEmail?: string) => {
+    const emailToUse = (targetEmail || unconfirmedEmail || email).trim().toLowerCase();
+    if (!emailToUse) {
+      setError('Please enter your email address to resend the verification link.');
+      return;
+    }
+    setResendLoading(true);
+    setResendSuccessMessage('');
+    setError('');
+    try {
+      const res = await authApi.resendVerificationEmail(emailToUse);
+      if (res.success) {
+        setResendSuccessMessage('Verification email sent! Please check your inbox and spam folder.');
+      } else {
+        setError(res.error || 'Failed to resend verification email.');
+      }
+    } catch (err: any) {
+      setError(err?.message || 'Failed to resend verification email.');
+    } finally {
+      setResendLoading(false);
+    }
+  };
+
+  // Poll for login request approval when in device_approval mode
+  useEffect(() => {
+    if (mode !== 'device_approval' || !approvalRequestId) return;
+
+    let isMounted = true;
+    const interval = setInterval(async () => {
+      try {
+        const { status } = await checkLoginApprovalStatus(approvalRequestId);
+        if (!isMounted) return;
+
+        if (status === 'approved') {
+          clearInterval(interval);
+          setApprovalStatus('approved');
+          setLoading(true);
+          setLoadingMessage('Device approved! Unlocking health vault...');
+
+          if (password && (tempUser?.id || email)) {
+            const targetId = tempUser?.id;
+            const unlockRes = await onUnlockVaultWithPassword(password, targetId);
+            const dek = unlockRes && typeof unlockRes === 'object' && 'dek' in unlockRes
+              ? unlockRes.dek
+              : (unlockRes as CryptoKey | null);
+
+            if (dek && tempUser && tempDevice) {
+              tempDevice.trusted = true;
+              onAuthSuccess(tempUser, dek, tempDevice, password);
+              return;
+            }
+          }
+          switchMode('login');
+        } else if (status === 'denied') {
+          clearInterval(interval);
+          setApprovalStatus('denied');
+        } else if (status === 'expired') {
+          clearInterval(interval);
+          setApprovalStatus('expired');
+        }
+      } catch {}
+    }, 2000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [mode, approvalRequestId, password, tempUser, tempDevice]);
 
   // Password Strength calculation
   const getPasswordStrength = (pwd: string) => {
@@ -91,6 +195,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setResendSuccessMessage('');
     if (!email.trim() || !password.trim()) {
       setError('Please enter both email and password.');
       return;
@@ -101,15 +206,6 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
 
     try {
       const res = await authApi.login(email.trim(), password);
-
-      // Check if user is Administrator (Django staff/superuser)
-      if (res.is_admin && res.redirect_url) {
-        setLoadingMessage('Administrator verified. Redirecting to Admin Portal...');
-        setTimeout(() => {
-          window.location.href = res.redirect_url || '/admin/';
-        }, 800);
-        return;
-      }
 
       const meta = getClientDeviceMetadata();
       const device: DeviceInfo = res?.device || {
@@ -137,20 +233,40 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
       // If new / untrusted device detected
       if (res?.requires_device_verification || (res?.device && res.device.trusted === false)) {
         setLoading(false);
-        switchMode('new_device');
+        if (res?.approval_request_id) {
+          setApprovalRequestId(res.approval_request_id);
+          switchMode('device_approval');
+        } else {
+          switchMode('new_device');
+        }
         return;
       }
 
-      // Trusted Device: Attempt local browser vault unlock
+      // Attempt browser vault unlock (with cloud envelope sync)
       setLoadingMessage('Unlocking encrypted health vault...');
-      const dek = await onUnlockVaultWithPassword(password);
+      const unlockRes = await onUnlockVaultWithPassword(password, user.id);
+      const dek = unlockRes && typeof unlockRes === 'object' && 'dek' in unlockRes
+        ? unlockRes.dek
+        : (unlockRes as CryptoKey | null);
+      const customError = unlockRes && typeof unlockRes === 'object' && 'error' in unlockRes
+        ? unlockRes.error
+        : undefined;
+
       if (dek) {
+        // Asynchronously check and notify if this login is from a new/unrecognized device
+        checkAndNotifyNewDevice(user, device).catch(() => {});
+
         onAuthSuccess(user, dek, device, password);
       } else {
-        setError('Incorrect password. Please verify your credentials or use your master recovery key.');
+        setError(customError || 'Incorrect password. Please verify your credentials or use your master recovery key.');
       }
     } catch (err: any) {
-      setError(err.message || 'Invalid email or password.');
+      if (err?.isUnconfirmedEmail || err?.message?.toLowerCase().includes('verify your email')) {
+        setUnconfirmedEmail(email.trim().toLowerCase());
+        setError('Please verify your email before signing in. Check your inbox for the verification link.');
+      } else {
+        setError(err.message || 'Invalid email or password.');
+      }
     } finally {
       setLoading(false);
     }
@@ -161,6 +277,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setResendSuccessMessage('');
     if (!fullName.trim() || !email.trim() || !password.trim()) {
       setError('Please fill in all required fields.');
       return;
@@ -174,7 +291,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
     setLoadingMessage('Creating secure account...');
 
     try {
-      // 1. Register with backend / local
+      // 1. Register with Supabase / local
       const regRes = await authApi.register(fullName.trim(), email.trim(), password);
 
       const meta = getClientDeviceMetadata();
@@ -196,17 +313,24 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
         last_seen_at: new Date().toISOString(),
       };
 
-      // 2. Generate random Recovery Secret and initialize browser envelope vault
+      // 2. Generate random Recovery Secret and initialize browser envelope vault + cloud envelope sync
       const recoverySecret = generateMasterRecoveryKey();
       setLoadingMessage('Initializing AES-256-GCM medical vault...');
-      const { dek } = await onInitializeVault(password, recoverySecret);
+      const { dek } = await onInitializeVault(password, recoverySecret, user.id);
 
       setGeneratedRecoveryKey(recoverySecret);
       setTempDEK(dek);
       setTempUser(user);
       setTempDevice(device);
 
-      // 3. Show Recovery Key presentation modal
+      // 3. If email verification is required by Supabase, present email confirmation screen
+      if (regRes.requires_email_verification) {
+        setUnconfirmedEmail(email.trim().toLowerCase());
+        setMode('email_verification_pending');
+        return;
+      }
+
+      // Otherwise show Recovery Key presentation modal
       setMode('recovery_key_display');
     } catch (err: any) {
       setError(err.message || 'Registration failed. Please try again.');
@@ -413,6 +537,20 @@ IMPORTANT PRIVACY & SECURITY RULES:
       }}
     >
       <main className="relative z-10 flex flex-col flex-1 w-full max-w-[440px] mx-auto justify-center">
+        {/* Back to Landing Navigation */}
+        {onBackToLanding && (
+          <div className="flex items-center justify-start pb-2 px-1">
+            <button
+              type="button"
+              onClick={onBackToLanding}
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-100 hover:text-white bg-white/10 hover:bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-full transition-all cursor-pointer shadow-xs focus-visible:outline-2 focus-visible:outline-emerald-400"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Back to Home</span>
+            </button>
+          </div>
+        )}
+
         {/* Brand Header */}
         <div className="flex flex-col items-center justify-center pt-2 pb-6 text-center">
           <h2 className="text-2xl sm:text-3xl uppercase tracking-widest flex items-center justify-center gap-2">
@@ -437,9 +575,32 @@ IMPORTANT PRIVACY & SECURITY RULES:
               </div>
 
               {error && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>{error}</span>
+                <div className="mb-4 p-3.5 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl flex flex-col gap-2.5 text-left">
+                  <div className="flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
+                    <span className="leading-snug font-medium">{error}</span>
+                  </div>
+                  {(unconfirmedEmail || error.toLowerCase().includes('verify your email')) && (
+                    <div className="pt-2 border-t border-red-200/70 flex items-center justify-between">
+                      <span className="text-[11px] text-stone-600 font-medium">Didn't receive the link?</span>
+                      <button
+                        type="button"
+                        onClick={() => handleResendVerification(email)}
+                        disabled={resendLoading}
+                        className="text-xs font-bold text-emerald-800 hover:underline inline-flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                      >
+                        {resendLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Mail className="w-3.5 h-3.5 text-emerald-700" />}
+                        <span>Resend verification email</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {resendSuccessMessage && (
+                <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-xl flex items-center gap-2 text-left">
+                  <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+                  <span className="font-medium">{resendSuccessMessage}</span>
                 </div>
               )}
 
@@ -524,6 +685,84 @@ IMPORTANT PRIVACY & SECURITY RULES:
                   <span className="font-medium">256-bit encrypted authentication</span>
                 </div>
               </form>
+            </div>
+          )}
+
+          {/* ========================================================= */}
+          {/* VIEW: EMAIL VERIFICATION PENDING                         */}
+          {/* ========================================================= */}
+          {mode === 'email_verification_pending' && (
+            <div className="text-center">
+              <div className="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-200">
+                <Mail className="w-7 h-7 text-emerald-700" />
+              </div>
+
+              <h1 className="text-2xl font-bold text-stone-900 tracking-tight mb-1">
+                Account Created Successfully
+              </h1>
+              <p className="text-sm text-stone-600 mb-5 leading-relaxed">
+                Please verify your email before signing in.
+              </p>
+
+              <div className="p-4 bg-emerald-50/80 rounded-2xl border border-emerald-200 text-left mb-5 space-y-2">
+                <div className="text-xs text-stone-500 font-semibold uppercase tracking-wider">
+                  Verification Link Sent To
+                </div>
+                <div className="font-mono text-sm font-bold text-emerald-950 break-all">
+                  {unconfirmedEmail || email}
+                </div>
+                <p className="text-xs text-stone-600 pt-1 leading-relaxed">
+                  We sent a confirmation link to your email address. Please open your inbox and click the link to activate your account.
+                </p>
+              </div>
+
+              {resendSuccessMessage && (
+                <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-xl flex items-center gap-2 text-left">
+                  <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+                  <span className="font-medium">{resendSuccessMessage}</span>
+                </div>
+              )}
+
+              {error && (
+                <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl flex items-center gap-2 text-left">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span className="font-medium">{error}</span>
+                </div>
+              )}
+
+              <div className="space-y-3">
+                <button
+                  type="button"
+                  onClick={() => handleResendVerification()}
+                  disabled={resendLoading}
+                  className="w-full h-12 bg-stone-100 hover:bg-stone-200 text-stone-800 text-sm font-bold rounded-xl flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  {resendLoading ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin text-stone-700" />
+                      <span>Sending...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Mail className="w-4 h-4 text-emerald-700" />
+                      <span>Resend verification email</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setError('');
+                    setResendSuccessMessage('');
+                    switchMode('login');
+                  }}
+                  className="w-full h-12 bg-[#064e3b] hover:bg-[#065f46] text-[#ecfdf5] text-sm font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer"
+                >
+                  <span>Go to Sign In</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           )}
 
@@ -923,36 +1162,103 @@ IMPORTANT PRIVACY & SECURITY RULES:
           {/* VIEW: DEVICE APPROVAL WAITING                             */}
           {/* ========================================================= */}
           {mode === 'device_approval' && (
-            <div className="text-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4 animate-pulse">
-                <Smartphone className="w-6 h-6 text-blue-700" />
-              </div>
+            <div className="text-center animate-fade-in">
+              {approvalStatus === 'waiting' && (
+                <>
+                  <div className="w-14 h-14 bg-amber-100 rounded-3xl flex items-center justify-center mx-auto mb-4 relative">
+                    <Smartphone className="w-7 h-7 text-amber-800" />
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 rounded-full animate-ping opacity-75" />
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-amber-600 rounded-full border-2 border-white" />
+                  </div>
 
-              <h2 className="text-xl font-bold text-stone-900 mb-1">Waiting for Device Approval</h2>
-              <p className="text-xs text-stone-600 mb-6 leading-relaxed">
-                Open Vital Diaries on an already trusted device (e.g., your laptop or primary phone) and approve the login request.
-              </p>
+                  <h2 className="text-xl font-bold text-stone-900 mb-1">New Device Detected</h2>
+                  <p className="text-xs text-stone-600 mb-5 leading-relaxed">
+                    Your sign-in needs authorization from one of your trusted devices.
+                  </p>
 
-              <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200 mb-6 text-xs text-stone-600 space-y-1">
-                <div className="font-semibold text-stone-900">Request Identifier:</div>
-                <div className="font-mono text-[11px] text-stone-500 break-all">{approvalRequestId || 'req_live_session'}</div>
-              </div>
+                  <div className="p-4 bg-stone-50/90 rounded-2xl border border-stone-200 mb-4 text-xs text-left space-y-2">
+                    <div className="flex justify-between">
+                      <span className="font-semibold text-stone-500">Device:</span>
+                      <span className="font-bold text-stone-900">{tempDevice?.device_name || 'Web Client'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-semibold text-stone-500">Browser:</span>
+                      <span className="font-medium text-stone-800">{tempDevice?.browser || 'Browser'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-semibold text-stone-500">Platform:</span>
+                      <span className="font-medium text-stone-800">{tempDevice?.platform || 'Operating System'}</span>
+                    </div>
+                  </div>
 
-              <button
-                type="button"
-                onClick={() => switchMode('recovery_key_input')}
-                className="w-full py-3 bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold rounded-xl mb-3 transition-colors cursor-pointer"
-              >
-                Use Master Recovery Key Instead
-              </button>
+                  <div className="p-3.5 bg-amber-50/80 border border-amber-200/80 rounded-2xl mb-5 flex items-center gap-3 text-left">
+                    <RefreshCw className="w-4 h-4 text-amber-700 animate-spin shrink-0" />
+                    <div className="text-xs text-amber-900">
+                      <span className="font-bold block">Waiting for approval...</span>
+                      <span className="text-[11px] text-amber-800/90">Keep this screen open while you approve on your trusted device.</span>
+                    </div>
+                  </div>
 
-              <button
-                type="button"
-                onClick={() => switchMode('login')}
-                className="text-xs text-stone-500 hover:text-stone-800 underline font-medium cursor-pointer"
-              >
-                Cancel and return to Sign In
-              </button>
+                  <button
+                    type="button"
+                    onClick={handleCancelApproval}
+                    className="w-full py-3 bg-stone-100 hover:bg-stone-200 text-stone-700 hover:text-red-700 text-xs font-bold rounded-xl transition-colors cursor-pointer"
+                  >
+                    Cancel Sign-In
+                  </button>
+                </>
+              )}
+
+              {approvalStatus === 'approved' && (
+                <div className="py-4">
+                  <div className="w-14 h-14 bg-emerald-100 rounded-3xl flex items-center justify-center mx-auto mb-4 text-emerald-700">
+                    <CheckCircle2 className="w-8 h-8 animate-bounce" />
+                  </div>
+                  <h2 className="text-xl font-bold text-stone-900 mb-1">Device Approved!</h2>
+                  <p className="text-xs text-stone-600 mb-4">
+                    Unlocking your zero-knowledge health vault...
+                  </p>
+                  <RefreshCw className="w-5 h-5 text-emerald-600 animate-spin mx-auto" />
+                </div>
+              )}
+
+              {approvalStatus === 'denied' && (
+                <>
+                  <div className="w-14 h-14 bg-red-100 rounded-3xl flex items-center justify-center mx-auto mb-4 text-red-700">
+                    <ShieldAlert className="w-8 h-8" />
+                  </div>
+                  <h2 className="text-xl font-bold text-stone-900 mb-1">Login Denied</h2>
+                  <p className="text-xs text-stone-600 mb-5 leading-relaxed">
+                    This sign-in attempt was rejected by an authorized device on your account. Your health records remain secure.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => switchMode('login')}
+                    className="w-full py-3.5 bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold rounded-xl transition-all cursor-pointer shadow-md"
+                  >
+                    Return to Sign In
+                  </button>
+                </>
+              )}
+
+              {approvalStatus === 'expired' && (
+                <>
+                  <div className="w-14 h-14 bg-amber-100 rounded-3xl flex items-center justify-center mx-auto mb-4 text-amber-800">
+                    <Clock className="w-8 h-8" />
+                  </div>
+                  <h2 className="text-xl font-bold text-stone-900 mb-1">Request Expired</h2>
+                  <p className="text-xs text-stone-600 mb-5 leading-relaxed">
+                    For your security, login approval requests automatically expire after 10 minutes. Please sign in again.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => switchMode('login')}
+                    className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-all cursor-pointer shadow-md"
+                  >
+                    Start Sign-In Again
+                  </button>
+                </>
+              )}
             </div>
           )}
 

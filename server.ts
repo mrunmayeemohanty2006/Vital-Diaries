@@ -31,6 +31,26 @@ function isPortOpen(port: number, host = '127.0.0.1'): Promise<boolean> {
   });
 }
 
+import fs from 'fs';
+
+function findPythonBinary(): string {
+  const candidates = [
+    path.join(currentDirname, 'backend/venv/bin/python'),
+    path.join(currentDirname, 'backend/venv/Scripts/python.exe'),
+    'python3',
+    'python',
+  ];
+
+  for (const candidate of candidates) {
+    if (candidate.startsWith(currentDirname)) {
+      if (fs.existsSync(candidate)) return candidate;
+    } else {
+      return candidate;
+    }
+  }
+  return 'python3';
+}
+
 async function ensureDjangoRunning() {
   const isRunning = await isPortOpen(8000);
   if (isRunning) {
@@ -39,7 +59,7 @@ async function ensureDjangoRunning() {
   }
 
   console.log('⚡ Starting Django Backend on http://127.0.0.1:8000...');
-  const pythonPath = path.join(currentDirname, 'backend/venv/bin/python');
+  const pythonPath = findPythonBinary();
   const managePy = path.join(currentDirname, 'backend/manage.py');
 
   const djangoProcess = spawn(pythonPath, [managePy, 'runserver', '127.0.0.1:8000', '--noreload'], {
@@ -49,6 +69,8 @@ async function ensureDjangoRunning() {
 
   djangoProcess.on('error', (err) => {
     console.error('Django Subprocess Error:', err.message);
+    console.error('💡 To set up the Django backend, run:');
+    console.error('   cd backend && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt && python manage.py migrate');
   });
 
   process.on('exit', () => {

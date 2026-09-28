@@ -5,6 +5,7 @@ import { encryptData } from '../../lib/crypto';
 import { performLocalOCR } from '../../lib/ocr';
 import { extractHealthData } from '../../lib/health-extractor';
 import { validateMedicalDocument } from '../../lib/medical-document-validator';
+import { uploadReportToSupabase } from '../../lib/cloud-reports';
 import type { HealthReport } from '../../types/health';
 
 interface AddHealthDataModalProps {
@@ -219,6 +220,11 @@ export const AddHealthDataModal: React.FC<AddHealthDataModalProps> = ({
         };
 
         await db.reports.put(newReport);
+
+        // Asynchronously synchronize to Supabase (Local-First: network failure does not block local save)
+        uploadReportToSupabase(newReport, userId).catch((err) => {
+          console.warn('Cloud report sync notice:', err?.message || err);
+        });
       }
 
       onSuccess();

@@ -6,6 +6,7 @@ import { getOrEnsureCryptoKey } from '../../lib/key-management';
 import { performLocalOCR } from '../../lib/ocr';
 import { extractHealthData } from '../../lib/health-extractor';
 import { validateMedicalDocument } from '../../lib/medical-document-validator';
+import { uploadReportToSupabase } from '../../lib/cloud-reports';
 import type { HealthReport } from '../../types/health';
 
 interface DashboardQuickUploadProps {
@@ -145,6 +146,11 @@ export const DashboardQuickUpload: React.FC<DashboardQuickUploadProps> = ({
 
       // 6. Save to IndexedDB
       await db.reports.put(newReport);
+
+      // Asynchronously synchronize to Supabase (Local-First: failure does not block local save)
+      uploadReportToSupabase(newReport, activeUserId).catch((err) => {
+        console.warn('Cloud report sync notice:', err?.message || err);
+      });
 
       setUploadStatus(`Successfully encrypted and saved "${file.name}" to local health vault!`);
       onReportAdded();

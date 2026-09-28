@@ -77,6 +77,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
           onRequestPersistence={onRequestPersistence}
           recoveryKeySnippet={recoveryKeySnippet}
           userName={userName}
+          userId={userId}
           onUpdateUserName={onUpdateUserName}
           onOpenExportBackup={() => setSubTab('backup')}
           onOpenRestore={() => setSubTab('backup')}

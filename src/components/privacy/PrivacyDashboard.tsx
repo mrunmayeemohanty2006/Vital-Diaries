@@ -3,6 +3,7 @@ import { ShieldCheck, Lock, Database, HardDrive, Key, Cloud, Trash2, Download, R
 import { StorageStatusCard } from './StorageStatusCard';
 import { RecoveryKeyCard } from './RecoveryKeyCard';
 import { DeleteDataModal } from './DeleteDataModal';
+import { TrustedDevicesManagementCard } from './TrustedDevicesManagementCard';
 
 interface PrivacyDashboardProps {
   isPersistent: boolean;
@@ -12,6 +13,7 @@ interface PrivacyDashboardProps {
   onRequestPersistence: () => Promise<void>;
   recoveryKeySnippet?: string;
   userName?: string;
+  userId?: string;
   onUpdateUserName?: (newName: string) => Promise<void>;
   onOpenExportBackup: () => void;
   onOpenRestore: () => void;
@@ -27,6 +29,7 @@ export const PrivacyDashboard: React.FC<PrivacyDashboardProps> = ({
   onRequestPersistence,
   recoveryKeySnippet,
   userName = 'User',
+  userId = '',
   onUpdateUserName,
   onOpenExportBackup,
   onOpenRestore,
@@ -144,6 +147,8 @@ export const PrivacyDashboard: React.FC<PrivacyDashboardProps> = ({
 
         <RecoveryKeyCard recoveryKeySnippet={recoveryKeySnippet} />
       </div>
+
+      {userId && <TrustedDevicesManagementCard userId={userId} />}
 
       {/* Danger Zone */}
       <div className="p-6 bg-white rounded-[2rem] border border-red-200/80 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-4">

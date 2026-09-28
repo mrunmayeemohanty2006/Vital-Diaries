@@ -1,7 +1,7 @@
 import React from 'react';
-import { LayoutDashboard, FileText, Activity, Pill, User, DownloadCloud, Shield, Lock, Sparkles, Settings as SettingsIcon } from 'lucide-react';
+import { LayoutDashboard, FileText, Activity, Search, Pill, User, DownloadCloud, Shield, Lock, Sparkles, Settings as SettingsIcon } from 'lucide-react';
 
-export type ActiveTab = 'dashboard' | 'records' | 'ai-advisor' | 'vitals' | 'medications' | 'profile' | 'backup' | 'privacy' | 'settings';
+export type ActiveTab = 'dashboard' | 'records' | 'ai-advisor' | 'search' | 'vitals' | 'medications' | 'profile' | 'backup' | 'privacy' | 'settings';
 
 interface SidebarProps {
   activeTab: ActiveTab;
@@ -13,6 +13,7 @@ export const NAV_ITEMS = [
   { id: 'dashboard' as ActiveTab, label: 'Dashboard', icon: LayoutDashboard },
   { id: 'records' as ActiveTab, label: 'Health Records', icon: FileText },
   { id: 'ai-advisor' as ActiveTab, label: 'Get Insights', icon: Activity },
+  { id: 'search' as ActiveTab, label: 'Search', icon: Search },
   { id: 'vitals' as ActiveTab, label: 'Vitals & Metrics', icon: Activity },
   { id: 'medications' as ActiveTab, label: 'Medications', icon: Pill },
   { id: 'profile' as ActiveTab, label: 'My Health Profile', icon: User },
@@ -23,6 +24,7 @@ export const TAB_LABELS: Record<ActiveTab, string> = {
   'dashboard': 'Dashboard',
   'records': 'Health Records',
   'ai-advisor': 'Get Insights',
+  'search': 'Search',
   'vitals': 'Vitals & Metrics',
   'medications': 'Medications',
   'profile': 'My Health Profile',
